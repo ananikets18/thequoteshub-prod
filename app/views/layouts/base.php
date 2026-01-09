@@ -59,10 +59,13 @@ $additionalJS = $additionalJS ?? [];
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg">
     
+    <!-- jQuery (Load First - Required by other scripts) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
     <!-- Base Styles -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     
     <!-- Additional CSS -->
@@ -99,9 +102,6 @@ $additionalJS = $additionalJS ?? [];
     
     <!-- Footer -->
     <?php include __DIR__ . '/../components/footer.php'; ?>
-    
-    <!-- Base Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     
     <!-- Global Configuration -->
     <script>

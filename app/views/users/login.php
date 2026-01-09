@@ -51,7 +51,7 @@ $csrfToken = generateCsrfToken();    ?>
         
           gtag('config', 'G-WFQ8T199Z6');
         </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind removed - use base layout or local CSS -->
   <style>
     body {
       background-color: #f4f2ee;

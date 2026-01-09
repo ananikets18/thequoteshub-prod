@@ -8,7 +8,7 @@ $baseUrl = getBaseUrl();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Contributors</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind removed - use base layout or local CSS -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
     <link rel="icon" type="image/x-icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/apple-touch-icon.png">

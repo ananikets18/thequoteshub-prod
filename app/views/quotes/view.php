@@ -34,7 +34,7 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
     
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind removed - use base layout or local CSS -->
 
     <!-- Canonical URL -->
     <link rel="canonical" href="<?php echo $baseUrl; ?>quote/<?php echo $quote['id']; ?>">
