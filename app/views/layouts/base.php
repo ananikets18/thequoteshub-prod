@@ -116,11 +116,11 @@ $additionalJS = $additionalJS ?? [];
     
     <!-- JavaScript Modules (if needed for this page) -->
     <?php if (isset($useModules) && $useModules): ?>
-        <script src="<?php echo $baseUrl; ?>assets/js/modules/scroll.module.js"></script>
-        <script src="<?php echo $baseUrl; ?>assets/js/modules/modal.module.js"></script>
-        <script src="<?php echo $baseUrl; ?>assets/js/modules/like.module.js"></script>
-        <script src="<?php echo $baseUrl; ?>assets/js/modules/save.module.js"></script>
-        <script src="<?php echo $baseUrl; ?>assets/js/modules/notification.module.js"></script>
+        <script src="<?php echo $baseUrl; ?>public/assets/js/modules/scroll.module.js"></script>
+        <script src="<?php echo $baseUrl; ?>public/assets/js/modules/modal.module.js"></script>
+        <script src="<?php echo $baseUrl; ?>public/assets/js/modules/like.module.js"></script>
+        <script src="<?php echo $baseUrl; ?>public/assets/js/modules/save.module.js"></script>
+        <script src="<?php echo $baseUrl; ?>public/assets/js/modules/notification.module.js"></script>
     <?php endif; ?>
     
     <!-- Additional JavaScript -->
