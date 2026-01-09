@@ -1,0 +1,21 @@
+{
+  "name": "quoteshub",
+  "version": "1.0.0",
+  "description": "The Quotes Hub - Production Build Configuration",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/assets/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/assets/css/tailwind.min.css --watch",
+    "dev": "tailwindcss -i ./src/input.css -o ./public/assets/css/tailwind.min.css --watch",
+    "prod": "tailwindcss -i ./src/input.css -o ./public/assets/css/tailwind.min.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  },
+  "keywords": [
+    "quotes",
+    "php",
+    "tailwindcss"
+  ],
+  "author": "",
+  "license": "MIT"
+}

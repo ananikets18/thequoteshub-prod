@@ -62,6 +62,9 @@ $additionalJS = $additionalJS ?? [];
     <!-- jQuery (Load First - Required by other scripts) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
+    
     <!-- Base Styles -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
     

@@ -11,10 +11,13 @@ config/.env
 !.env.local.example
 !.env.production
 
-# Composer Dependencies
+# Composer & Node Dependencies
 /vendor/
 composer.lock
 node_modules/
+package-lock.json
+npm-debug.log
+yarn.lock
 
 # Logs
 /storage/logs/*.log
