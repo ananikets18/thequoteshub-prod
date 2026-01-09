@@ -1,12 +1,20 @@
-# Dependencies
-/vendor/
-node_modules/
+# ============================================
+# GIT IGNORE - DO NOT COMMIT THESE FILES
+# ============================================
 
-# Environment
+# Environment Configuration Files (NEVER COMMIT!)
 .env
+config/.env
+.env.local
 .env.*.local
 !.env.example
 !.env.local.example
+!.env.production
+
+# Composer Dependencies
+/vendor/
+composer.lock
+node_modules/
 
 # Logs
 /storage/logs/*.log

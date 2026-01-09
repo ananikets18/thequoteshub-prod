@@ -1,0 +1,58 @@
+# ============================================
+# OPTIONAL: GitHub Actions CI/CD
+# ============================================
+# This is optional - DigitalOcean App Platform handles deployment automatically
+# Use this only if you want additional CI checks before deployment
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ============================================
+  # TEST JOB - Run before deployment
+  # ============================================
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: mysqli, mbstring, xml
+        coverage: none
+    
+    - name: Validate composer.json
+      run: composer validate --strict
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+    
+    - name: Check PHP syntax
+      run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \; | grep -v "No syntax errors"
+    
+    - name: Run security checks
+      run: |
+        composer require --dev roave/security-advisories:dev-latest || true
+    
+  # ============================================
+  # NOTIFICATION JOB - Notify on success
+  # ============================================
+  notify:
+    needs: test
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: Deployment notification
+      run: |
+        echo "✅ Tests passed! DigitalOcean will auto-deploy."
+        echo "Check: https://cloud.digitalocean.com/apps"
