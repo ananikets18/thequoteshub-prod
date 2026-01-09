@@ -1,78 +1,25 @@
-# The Quotes Hub
+# The Quotes Hub (Beta v0.9.0)
+> *Where Words Matter.*
 
-A social quote sharing platform built with PHP and MySQL.
+Welcome to **The Quotes Hub**, a platform designed for sharing, discovering, and connecting through the power of words. We are currently in **Open Beta**.
 
-## 🚀 Quick Start
+## 🚧 Beta Status
+We are actively refining the experience. As we are in **Beta (v0.9.0)**, you may encounter occasional bugs or incomplete features. Your feedback is invaluable in helping us shape the future of this platform.
 
-### Requirements
-- PHP 7.4+
-- MySQL 5.7+
-- Apache with mod_rewrite
-- Composer
+**Current Focus:**
+- Enhanced Security & Performance
+- Improved Mobile Experience
+- Optimized Content Discovery
 
-### Installation
+## ✨ Highlights
+- **Curated Wisdom:** Discover a vast collection of quotes across various categories.
+- **Community Driven:** Share your own insights and connect with like-minded individuals.
+- **Personalized Experience:** Follow authors, save your favorites, and get recommendations.
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   composer install
-   ```
+## 🚀 Getting Started
+Explore the platform and start sharing your thoughts today at [thequoteshub.in](https://thequoteshub.in)
 
-3. Configure database:
-   - Copy `config/database.php.example` to `config/database.php`
-   - Update with your database credentials
-
-4. Set up storage permissions:
-   ```bash
-   chmod -R 775 storage/
-   chmod -R 775 public/uploads/
-   ```
-
-5. Configure your web server to point to the project root
-
-## 📁 Project Structure
-
-```
-public_html/
-├── app/
-│   ├── api/              # API endpoints (JSON responses)
-│   ├── controllers/      # Business logic
-│   ├── models/           # Data access layer
-│   └── views/            # Presentation layer
-├── config/               # Configuration files
-├── public/
-│   ├── assets/           # Static assets (CSS, JS)
-│   └── uploads/          # User-generated content
-├── scripts/              # Automation scripts (bots)
-├── storage/
-│   ├── data/             # Bot data files
-│   ├── logs/             # Application logs
-│   └── temp/             # Temporary files
-└── vendor/               # Composer dependencies
-```
-
-## 🤖 Running Bots
-
-### Quote Posting Bot
-```bash
-php scripts/bot.php
-```
-
-### Like/Save Bot
-```bash
-php scripts/like_save_bot.php
-```
-
-## 🔐 Security
-
-- Never commit `config/database.php` with real credentials
-- Keep `storage/` directory outside web root in production
-- Regularly review `storage/logs/error.log`
+> *Note: This repository contains the source code for the platform. For security reasons, detailed architectural documentation is restricted.*
 
 ## 📝 License
-
-Proprietary - All rights reserved
-
-## 🔗 Live Site
-
-https://thequoteshub.info
+Proprietary - All rights reserved.
