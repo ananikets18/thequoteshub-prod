@@ -17,9 +17,8 @@ We are actively refining the experience. As we are in **Beta (v0.9.0)**, you may
 - **Personalized Experience:** Follow authors, save your favorites, and get recommendations.
 
 ## 🚀 Getting Started
-Explore the platform and start sharing your thoughts today at [thequoteshub.in](https://thequoteshub.in)
+Explore the platform and start sharing your thoughts today at [thequoteshub.info](https://thequoteshub.info)
 
 > *Note: This repository contains the source code for the platform. For security reasons, detailed architectural documentation is restricted.*
 
-## 📝 License
-Proprietary - All rights reserved.
+
