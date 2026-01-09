@@ -12,8 +12,8 @@ git add .
 # 3. Commit
 git commit -m "feat: production Tailwind CSS (99% smaller, 40x faster)"
 
-# 4. Push to GitHub
-git push origin main
+# 4. Push to Production Repo
+git push prod main
 ```
 
 ---

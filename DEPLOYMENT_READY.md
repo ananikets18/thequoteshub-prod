@@ -69,7 +69,7 @@ git commit -m "feat: production-ready Tailwind CSS + frontend optimization
 
 Performance improvement: 3.5 MB → 50 KB Tailwind CSS"
 
-git push origin main
+git push prod main
 ```
 
 ---
@@ -152,7 +152,7 @@ npm run prod
 # Commit the new build
 git add public/assets/css/tailwind.min.css
 git commit -m "chore: rebuild Tailwind CSS with new classes"
-git push origin main
+git push prod main
 ```
 
 ---
