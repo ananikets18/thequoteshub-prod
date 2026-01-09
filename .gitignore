@@ -1,0 +1,48 @@
+# Dependencies
+/vendor/
+node_modules/
+
+# Environment
+.env
+.env.*.local
+!.env.example
+!.env.local.example
+
+# Logs
+/storage/logs/*.log
+/storage/logs/*.html
+*.log
+
+# Temporary files
+/storage/temp/*
+!storage/temp/.gitkeep
+cookies.txt
+
+# User uploads (optional - uncomment if you don't want to track uploads)
+# /public/uploads/*
+# !public/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Old/Beta versions
+/betaversion/
+
+# Project analysis (optional)
+PROJECT_ANALYSIS.md
+
+# Composer
+composer.phar
+composer.lock
+
+# Old structure (if any remain)
+/public/css/
+/public/js/

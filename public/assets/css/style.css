@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Raleway:ital,wght@0,400..900;1,400..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+.menu-hidden {
+  display: none;
+}
+.menu-visible {
+  display: block;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Modal Styles */
+.shareModal {
+  display: none;
+  z-index: 1000 !important;
+}
+
+.shareModal.active {
+  display: flex;
+}
+
+/* Button Styles */
+button {
+  cursor: pointer;
+}
+
+button svg {
+  vertical-align: middle;
+}
+
+.skiptranslate.goog-te-gadget {
+  display: flex;
+}
+.skiptranslate.goog-te-gadget span {
+display:none;
+}
+.skiptranslate.goog-te-gadget #text {
+display:none;
+}
+.goog-te-combo {
+  border: 2px solid #86efac;
+  padding: 0.125rem;
+  border-radius: 0.786em;
+}
+.skiptranslate.goog-te-gadget a {
+  display: none;
+}
+
+.view_blockquote {
+  font-family: "Raleway", sans-serif;
+}
+
+
+
+    /* Initial state of the notification bar */
+    #notification-bar {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+    #notification-bar.show {
+      display: flex;
+      opacity: 1;
+    }
+
+/* Custom Media Queries for Small Laptops and Tablets */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .text-lg {
+    font-size: 0.875rem; /* Reduce font size */
+  }
+  .space-x-8 {
+    margin-left: 0.5rem; /* Adjust spacing between menu items */
+  }
+  .ml-10 {
+    margin-left: 0.5rem; /* Adjust margin-left */
+  }
+  .search_bar_wrapper input {
+    font-size: 0.875rem; /* Adjust font size */
+  }
+}
+
+@media (max-width: 767px) {
+  .text-lg {
+    font-size: 0.75rem; /* Further reduce font size for small screens */
+  }
+  .ml-10 {
+    margin-left: 0.25rem; /* Further adjust margin-left */
+  }
+  .space-x-8 {
+    margin-left: 0.25rem; /* Further adjust spacing between menu items */
+  }
+  .search_bar_wrapper input {
+    font-size: 0.75rem; /* Further adjust font size */
+  }
+}

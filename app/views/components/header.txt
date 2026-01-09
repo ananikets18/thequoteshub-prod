@@ -1,0 +1,176 @@
+<?php
+$baseUrl = 'https://www.thequoteshub.in/';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
+    <title>QuotesHub - Share Your Wisdom: Create, Inspire, and Connect Through Quotes! 💬🌟</title>
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/css/style.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-16x16.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFQ8T199Z6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WFQ8T199Z6');
+    </script>
+</head>
+<body style="background-color: #f4f2ee;">
+
+<!-- Notification Bar -->
+<div id="notification-bar"
+     class="fixed top-0 inset-x-0 py-2 px-5 flex items-center justify-between shadow-lg z-50 bg-green-300">
+    <div class="flex items-center space-x-3">
+        <a href="<?php echo $baseUrl; ?>blogs"
+           class="flex items-center text-sm md:text-lg font-semibold"
+           title="Notification Icon">
+            📢
+            <span class="ml-2">We have new updates available!</span>
+        </a>
+    </div>
+    <button class="text-green-700 hover:text-green-900 p-1 md:p-2 lg:p-3 rounded-full flex items-center"
+            onclick="dismissNotification()" title="Close Notification">
+        <!-- SVG Icon for Close -->
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+</div>
+
+<!-- Header + Navbar -->
+   <header class="bg-white w-full h-auto border-b border-gray-300">
+      <nav class="container mx-auto px-4 py-2 flex flex-wrap items-center justify-between">
+        <div class="flex items-center justify-between w-full lg:w-auto">
+          <div class="logo_wrapper">
+            <a href="/">
+              <img src="<?php echo $baseUrl; ?>/public/uploads/images/logo.svg" alt="quoteshub-logo" />
+            </a>
+          </div>
+
+          <?php if (!isset($_SESSION['user_id'])): ?>
+          <div class="ml-auto lg:hidden">
+            <a href="<?php echo $baseUrl; ?>register"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition text-sm">Create
+              Account</a>
+          </div>
+          <?php else: ?>
+          <div class="ml-auto lg:hidden flex items-center space-x-2">
+            <a href="<?php echo $baseUrl; ?>create-quote"
+              class="border border-emerald-600 text-emerald-700 bg-white rounded-lg hover:bg-emerald-700 hover:text-white py-1 px-2 md:py-2 md:px-4 transition-all duration-200 text-sm">Create
+              Quote</a>
+
+            <a href="<?php echo $baseUrl; ?>notifications"
+              class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-white border border-gray-300 rounded-full hover:bg-emerald-500 hover:text-white transition duration-200">
+              <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.437L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
+                </path>
+              </svg>
+            </a>
+
+            <!-- Profile Button -->
+            <div class="relative">
+              <a href="#" id="profileButton"
+                class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-white border border-gray-300 rounded-full hover:bg-emerald-500 hover:text-white transition duration-200">
+                <img src="<?php echo $baseUrl; ?>/public/uploads/authors_images/placeholder.png" alt="profile-icon"
+                  class="w-6 h-6 md:w-8 md:h-8 rounded-full">
+              </a>
+
+              <!-- Dropdown Menu -->
+              <div id="profileDropdown"
+                class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10 hidden p-2">
+                <div class="px-4 py-2 border-b">
+                  <p class="font-semibold"><?php echo $_SESSION['name']; ?></p>
+                  <p class="text-sm text-gray-600">@<?php echo $_SESSION['username']; ?></p>
+                </div>
+                <a href="<?php echo $baseUrl; ?>dashboard"
+                  class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Dashboard</a>
+                   <a href="<?php echo $baseUrl; ?>profile"
+                class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Profile</a>
+                <a href="<?php echo $baseUrl; ?>settings"
+                  class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg border-b">Settings</a>
+                <a href="<?php echo $baseUrl; ?>logout"
+                  class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Sign
+                  Out</a>
+              </div>
+            </div>
+          </div>
+          <?php endif; ?>
+        </div>
+
+        <div class="search_bar_wrapper w-full mt-2 lg:mt-0 lg:w-auto lg:ml-4">
+          <div class="relative">
+            <input type="text" placeholder="Search Quotes..."
+              class="w-full lg:max-w-sm pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition outline-none" />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="hidden lg:flex items-center space-x-4 mt-2 lg:mt-0 ml-auto">
+          <?php if (!isset($_SESSION['user_id'])): ?>
+          <a href="<?php echo $baseUrl; ?>login" class="text-gray-700 hover:text-emerald-600 font-medium">Login</a>
+          <a href="<?php echo $baseUrl; ?>register"
+            class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition">Create
+            Account</a>
+          <?php else: ?>
+          <a href="<?php echo $baseUrl; ?>create-quote"
+            class="border border-emerald-600 text-emerald-700 bg-white rounded-lg hover:bg-emerald-700 hover:text-white py-2 px-4 transition-all duration-200">Create
+            Quote</a>
+          <a href="<?php echo $baseUrl; ?>notifications"
+            class="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-emerald-500 hover:text-white transition duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.437L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
+              </path>
+            </svg>
+          </a>
+
+          <div class="relative">
+            <a href="#" id="desktopProfileButton"
+              class="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-full hover:bg-emerald-500 hover:text-white transition duration-200">
+              <img src="<?php echo $baseUrl; ?>/public/uploads/authors_images/placeholder.png" alt="profile-icon"
+                class="w-8 h-8 rounded-full">
+            </a>
+            <div id="desktopProfileDropdown"
+              class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10 hidden p-2">
+              <div class="px-4 py-2 border-b">
+                <p class="font-semibold"><?php echo $_SESSION['name']; ?></p>
+                <p class="text-sm text-gray-600">@<?php echo $_SESSION['username']; ?></p>
+              </div>
+              <a href="<?php echo $baseUrl; ?>dashboard"
+                class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Dashboard</a>
+              <a href="<?php echo $baseUrl; ?>profile"
+                class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Profile</a>
+              <a href="<?php echo $baseUrl; ?>settings"
+                class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 border-b rounded-lg">Settings</a>
+              <a href="<?php echo $baseUrl; ?>logout"
+                class="block px-4 py-2 text-gray-800 hover:bg-emerald-100 rounded-lg">Sign
+                Out</a>
+            </div>
+          </div>
+          <?php endif; ?>
+        </div>
+      </nav>
+    </header>
