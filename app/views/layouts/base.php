@@ -56,8 +56,12 @@ $additionalJS = $additionalJS ?? [];
     
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg">
+    <!-- Favicon (Multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/apple-touch-icon.png">
+    <link rel="shortcut icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
     
     <!-- jQuery (Load First - Required by other scripts) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

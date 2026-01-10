@@ -58,7 +58,7 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
         <div class="flex items-center justify-between w-full lg:w-auto">
           <div class="logo_wrapper">
             <a href="/">
-              <img src="<?php echo $baseUrl; ?>/public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
+              <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
             </a>
           </div>
 
@@ -250,7 +250,7 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
     <!-- Logo and Copyright -->
     <div class="flex items-center md:flex-row flex-col justify-center space-x-4">
       <a class="flex items-center justify-center space-x-4" href="https:://www.thequoteshub.in"><img
-          src="<?php echo $baseUrl; ?>/public/uploads/images/logo.svg" alt="Website Logo" class="mr-4" />
+          src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="Website Logo" class="mr-4" />
         <p class="text-xs text-gray-500">&copy; <span><?php echo date("Y"); ?></span>  Quoteshub</p>
       </a>
       <p class="text-xs text-gray-500 ml-4">

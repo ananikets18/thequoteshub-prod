@@ -122,7 +122,7 @@
     </div>
 
     <a href="<?php echo getBaseUrl(); ?>" class="flex items-center space-x-2 mt-4">
-      <img src="<?php echo $baseUrl; ?>/public/uploads/images/logo_clean.svg" alt="Website Logo" class="h-6 w-auto" />
+      <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="Website Logo" class="h-6 w-auto" />
       <p class="text-gray-500 text-xs md:text-sm">&copy; <span><?php echo date("Y"); ?></span> Quoteshub</p>
     </a>
   </div>

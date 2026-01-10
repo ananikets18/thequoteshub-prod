@@ -151,7 +151,7 @@ $followNotifications = array_filter($notifications, fn($n) => $n['type'] === 'fo
         </div>
         <div class="flex items-center md:flex-row flex-col justify-center space-x-4">
             <a class="flex items-center justify-center space-x-4" href="<?php echo $baseUrl; ?>">
-                <img src="<?php echo $baseUrl; ?>/public/uploads/images/logo_clean.svg" alt="Website Logo" class="mr-4" />
+                <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="Website Logo" class="mr-4" />
                 <p class="text-xs text-gray-500">&copy; <span><?php echo date("Y"); ?></span> Quoteshub</p>
             </a>
             <p class="text-xs text-gray-500 ml-4">

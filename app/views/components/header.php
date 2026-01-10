@@ -85,7 +85,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="flex items-center justify-between w-full lg:w-auto">
           <div class="logo_wrapper">
             <a href="/public_html">
-              <img  src="<?php echo $baseUrl; ?>/public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
+              <img  src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
             </a>
           </div>
 

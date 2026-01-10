@@ -56,7 +56,7 @@
     <div class="flex items-center justify-between w-full lg:w-auto">
       <!-- Logo Section -->
       <div class="logo_wrapper ml-0">
-        <a href="<?php echo $baseUrl; ?>"><img src="<?php echo $baseUrl; ?>/public/uploads/images/logo.svg"
+        <a href="<?php echo $baseUrl; ?>"><img src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg"
             alt="quoteshub-logo" /></a>
       </div>
       <!-- Mobile Menu Button (visible on small screens) -->
@@ -196,7 +196,7 @@
     <!-- Logo and Copyright -->
     <div class="flex items-center md:flex-row flex-col justify-center space-x-4">
       <a class="flex items-center justify-center space-x-4" href="https:://www.thequoteshub.in"><img
-          src="<?php echo $baseUrl; ?>/public/uploads/images/logo.svg" alt="Website Logo" class="mr-4" />
+          src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="Website Logo" class="mr-4" />
         <p class="text-xs text-gray-500">&copy; <span><?php echo date("Y"); ?></span>  Quoteshub</p>
       </a>
       <p class="text-xs text-gray-500 ml-4">
