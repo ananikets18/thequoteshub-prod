@@ -1,6 +1,13 @@
 <?php
 session_start();
+
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/utilis.php';
 require_once __DIR__ . '/../models/NotificationModel.php';
 
 header('Content-Type: application/json');
@@ -11,6 +18,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Check database connection
+if (!isset($conn) || !$conn) {
+    echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+    exit;
+}
+
 // Get parameters
 $userId = $_SESSION['user_id'];
 $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
@@ -18,8 +31,6 @@ $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
 $type = isset($_GET['type']) ? $_GET['type'] : 'all'; // 'all', 'likes_saves', 'follows'
 
 try {
-    $db = new Database();
-    $conn = $db->getConnection();
     $notificationModel = new NotificationModel($conn);
     
     // Get notifications with pagination
@@ -100,21 +111,13 @@ try {
     
 } catch (Exception $e) {
     error_log("Error loading notifications: " . $e->getMessage());
-    echo json_encode(['success' => false, 'error' => 'Failed to load notifications']);
+    error_log("Stack trace: " . $e->getTraceAsString());
+    echo json_encode([
+        'success' => false, 
+        'error' => 'Failed to load notifications',
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
 }
-
-function getBaseUrl() {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $scriptName = $_SERVER['SCRIPT_NAME'];
-    $basePath = rtrim(dirname(dirname(dirname($scriptName))), '/\\');
-    return $protocol . '://' . $host . $basePath . '/';
-}
-
-function decodeAndCleanText($text) {
-    return html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-}
-
-function decodeCleanAndRemoveTags($text) {
-    return strip_tags(html_entity_decode($text, ENT_QUOTES, 'UTF-8'));
-}
+?>

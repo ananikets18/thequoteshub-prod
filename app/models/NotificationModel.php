@@ -82,10 +82,10 @@ class NotificationModel
         $query1 = "SELECT 
                       n.id, n.user_id, n.sender_id, n.quote_id, n.type, n.created_at, n.is_read, 
                       u.user_img AS sender_img, u.username AS user_name, u.name AS sender_name, 
-                      q.quote_text AS quote_text
+                      COALESCE(q.quote_text, '[Quote deleted]') AS quote_text
                     FROM notifications n
-                    JOIN users u ON n.sender_id = u.id  
-                    JOIN quotes q ON n.quote_id = q.id  
+                    LEFT JOIN users u ON n.sender_id = u.id  
+                    LEFT JOIN quotes q ON n.quote_id = q.id  
                     WHERE n.user_id = ? 
                     ORDER BY n.created_at DESC";
         
@@ -95,7 +95,7 @@ class NotificationModel
                       u.user_img AS sender_img, u.username AS user_name, u.name AS sender_name, 
                       NULL AS quote_text
                     FROM follow_notifications fn
-                    JOIN users u ON fn.follower_id = u.id
+                    LEFT JOIN users u ON fn.follower_id = u.id
                     WHERE fn.followed_user_id = ?
                     ORDER BY fn.created_at DESC";
         
