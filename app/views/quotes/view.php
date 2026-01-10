@@ -33,8 +33,8 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
       <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-16x16.png">
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
     
-    <!-- Tailwind CSS CDN -->
-    <!-- Tailwind removed - use base layout or local CSS -->
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="<?php echo $baseUrl; ?>quote/<?php echo $quote['id']; ?>">

@@ -36,8 +36,10 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
     <meta name="twitter:description" content="Explore and share inspiring quotes on QuotesHub.">
     
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
-    <!-- Tailwind CSS CDN -->
-    <!-- Tailwind removed - use base layout or local CSS -->
+    
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
        <!-- Google tag (gtag.js) -->

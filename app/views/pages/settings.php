@@ -4,14 +4,17 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Tailwind removed - use base layout or local CSS -->
+    
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
+    
     <title>Settings - Under Construction</title>
         <link rel="canonical" href="<?php echo getBaseUrl(); ?>settings">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $baseUrl; ?>public/assets/css/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $baseUrl; ?>public/uploads/images/favicon/favicon-16x16.png">
 
     <!-- Stylesheets -->

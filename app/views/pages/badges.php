@@ -25,7 +25,9 @@ $baseUrl = getBaseUrl();
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
-    <!-- Tailwind removed - use base layout or local CSS -->
+    
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
 </head>
 <body class="antialiased" style="background-color: #dcdad6;">
     

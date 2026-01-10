@@ -34,8 +34,9 @@
     <meta property="twitter:description" content="Find quote categories that resonate with you at Quoteshub and share your own wisdom!">
 
   
-    <!-- Tailwind CSS CDN -->
-    <!-- Tailwind removed - use base layout or local CSS -->
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/tailwind.min.css">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     

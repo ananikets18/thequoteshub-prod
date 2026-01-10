@@ -46,8 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-    <!-- Tailwind CSS CDN -->
-    <!-- Tailwind removed - use base layout or local CSS -->
+    
+    <!-- Tailwind CSS (Local Build - Production Optimized) -->
+    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>public/assets/css/tailwind.min.css">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
