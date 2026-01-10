@@ -1,6 +1,7 @@
 <?php include __DIR__ . '/components/header.php'; ?>
 <?php
-$baseUrl = 'https://thequoteshub.in/admin'; // Replace with your actual base URL
+require_once __DIR__ . '/../../config/utilis.php';
+$baseUrl = getBaseUrl() . '/admin';
 ?>
 <div class="bg-gray-200 flex items-center justify-center min-h-screen">
   <div class="w-full max-w-md mx-auto bg-white shadow-md rounded-lg p-8">

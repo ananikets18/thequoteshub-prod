@@ -55,9 +55,8 @@
                 <?php foreach ($usersWithCount as $index => $user): ?>
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($user['id']); ?></td> 
-                        <?php $baseUrl = 'https://thequoteshub.in/'; ?>
                         <td class="px-4 py-3 whitespace-nowrap">
-                            <a href="<?= $baseUrl; ?><?= htmlspecialchars($user['username']); ?>" class="text-blue-600 hover:text-blue-900 font-medium">
+                            <a href="<?= getBaseUrl(); ?><?= htmlspecialchars($user['username']); ?>" class="text-blue-600 hover:text-blue-900 font-medium">
                                 <?= htmlspecialchars(decodeCleanAndRemoveTags(decodeAndCleanText($user['name']))); ?>
                             </a>
                         </td>
@@ -79,7 +78,7 @@
                      <span class="text-xs text-gray-400"><?= htmlspecialchars(convertUtcToIst($user['created_at'])); ?></span>
                 </div>
                 <div class="mb-2">
-                    <a href="https://thequoteshub.in/<?= htmlspecialchars($user['username']); ?>" class="text-lg font-semibold text-blue-600 hover:text-blue-800">
+                    <a href="<?= getBaseUrl(); ?><?= htmlspecialchars($user['username']); ?>" class="text-lg font-semibold text-blue-600 hover:text-blue-800">
                         <?= htmlspecialchars(decodeCleanAndRemoveTags(decodeAndCleanText($user['name']))); ?>
                     </a>
                     <div class="text-sm text-gray-600 truncate"><?= htmlspecialchars($user['email']); ?></div>

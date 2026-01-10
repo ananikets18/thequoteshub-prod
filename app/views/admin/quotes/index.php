@@ -1,7 +1,8 @@
 <?php include __DIR__ . '/../components/header.php'; ?>
   <?php include __DIR__ . '/../components/navbar-component.php'; ?>
 <?php
-$baseUrl = 'https://thequoteshub.in/admin'; // Replace with your actual base URL
+require_once __DIR__ . '/../../../config/utilis.php';
+$baseUrl = getBaseUrl() . '/admin';
 ?>
  
   
