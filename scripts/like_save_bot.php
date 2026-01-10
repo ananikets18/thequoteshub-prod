@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php'; // Load PHPSpreadsheet library
+require __DIR__ . '/../config/env.php'; // Load environment configuration
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 $excelFilePath = __DIR__ . "/../storage/data/quotes_like_save.xlsx";
@@ -31,9 +32,9 @@ try {
     die("[ERROR] " . $e->getMessage() . "\n");
 }
 
-$loginUrl = "https://thequoteshub.in/login";
-$indexUrl = "https://thequoteshub.in/"; // Main page where quotes are listed
-$logoutUrl = "https://thequoteshub.in/logout";
+$loginUrl = APP_URL . "/login";
+$indexUrl = APP_URL . "/"; // Main page where quotes are listed
+$logoutUrl = APP_URL . "/logout";
 $cookieFile = __DIR__ . "/../storage/temp/cookies.txt";
 
 while (true) {
@@ -94,14 +95,14 @@ while (true) {
         echo "[INFO] Liking & saving latest Quote ID: $quoteId\n";
         
         // Like
-        $likeUrl = "https://thequoteshub.in/quote/$quoteId/like";
+        $likeUrl = APP_URL . "/quote/$quoteId/like";
         curl_setopt($ch, CURLOPT_URL, $likeUrl);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_exec($ch);
         echo "[SUCCESS] Liked Quote ID: $quoteId\n";
 
         // Save
-        $saveUrl = "https://thequoteshub.in/quote/$quoteId/save";
+        $saveUrl = APP_URL . "/quote/$quoteId/save";
         curl_setopt($ch, CURLOPT_URL, $saveUrl);
         curl_exec($ch);
         echo "[SUCCESS] Saved Quote ID: $quoteId\n";
@@ -112,14 +113,14 @@ while (true) {
     echo "[INFO] Liking & saving random Quote ID: $randomQuoteId\n";
     
     // Like
-    $likeUrl = "https://thequoteshub.in/quote/$randomQuoteId/like";
+    $likeUrl = APP_URL . "/quote/$randomQuoteId/like";
     curl_setopt($ch, CURLOPT_URL, $likeUrl);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_exec($ch);
     echo "[SUCCESS] Liked Random Quote ID: $randomQuoteId\n";
 
     // Save
-    $saveUrl = "https://thequoteshub.in/quote/$randomQuoteId/save";
+    $saveUrl = APP_URL . "/quote/$randomQuoteId/save";
     curl_setopt($ch, CURLOPT_URL, $saveUrl);
     curl_exec($ch);
     echo "[SUCCESS] Saved Random Quote ID: $randomQuoteId\n";

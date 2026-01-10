@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php'; // Load PHPSpreadsheet library
+require __DIR__ . '/../config/env.php'; // Load environment configuration
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 $excelFilePath = __DIR__ . "/../storage/data/quotes_data.xlsx";
@@ -43,9 +44,9 @@ try {
     die("Error: " . $e->getMessage());
 }
 
-$loginUrl = "https://thequoteshub.in/login";
-$createQuoteUrl = "https://thequoteshub.in/create-quote";
-$logoutUrl = "https://thequoteshub.in/logout";
+$loginUrl = APP_URL . "/login";
+$createQuoteUrl = APP_URL . "/create-quote";
+$logoutUrl = APP_URL . "/logout";
 
 $cookieFile = __DIR__ . "/../storage/temp/cookies.txt";
 

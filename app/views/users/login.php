@@ -72,7 +72,7 @@ $csrfToken = generateCsrfToken();    ?>
           <h3 class="text-gray-800 text-4xl font-extrabold mb-4">Sign in</h3>
        <p class="text-gray-600 text-sm md:text-md mb-4">
   Welcome to 
-  <a href="https://thequoteshub.in" 
+  <a href="<?php echo getBaseUrl(); ?>" 
      class="bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text font-semibold">
      QuotesHub!
   </a> 

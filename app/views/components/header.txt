@@ -1,5 +1,6 @@
 <?php
-$baseUrl = 'https://www.thequoteshub.in/';
+require_once __DIR__ . '/../../../config/utilis.php';
+$baseUrl = getBaseUrl();
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -10,7 +10,7 @@
     <meta name="description" content="Discover a variety of quote categories on Quoteshub. Find inspiration, share your wisdom, and connect with others through quotes on love, life, motivation, and more.">
     <meta name="keywords" content="quotes, inspiration, motivation, wisdom, life quotes, love quotes, categories, Quoteshub">
     <meta name="author" content="thequoteshub">
-    <link rel="canonical" href="https://thequoteshub.in/categories">
+    <link rel="canonical" href="<?php echo getBaseUrl(); ?>categories">
   
     <?php $baseUrl = getBaseUrl(); ?>
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>public/assets/css/style.css">
@@ -23,13 +23,13 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://thequoteshub.in/categories">
+    <meta property="og:url" content="<?php echo getBaseUrl(); ?>categories">
     <meta property="og:title" content="Categories - Quoteshub | Share Your Wisdom: Create, Inspire, and Connect Through Quotes!">
     <meta property="og:description" content="Explore diverse categories of quotes at Quoteshub and share your insights with the world.">
       
  
     <!-- Twitter -->
-    <meta property="twitter:url" content="https://thequoteshub.in/categories">
+    <meta property="twitter:url" content="<?php echo getBaseUrl(); ?>categories">
     <meta property="twitter:title" content="Categories - Quoteshub | Share Your Wisdom: Create, Inspire, and Connect Through Quotes!">
     <meta property="twitter:description" content="Find quote categories that resonate with you at Quoteshub and share your own wisdom!">
 
@@ -71,9 +71,6 @@ $baseUrl = getBaseUrl(); // Replace with your actual base URL
     </div>
   </nav>
 <?php include_once  __DIR__ . '/../../../config/utilis.php'; ?>
-<?php
-$baseUrl = 'https://thequoteshub.in/'; // Replace with your actual base URL
-?>
 <div class="container mx-auto px-4 py-8 h-lvh">
   <h1 class="text-xl md:text-2xl lg:text-3xl font-extrabold text-gray-800 my-6 text-center">
     📚 Explore Categories

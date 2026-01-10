@@ -51,13 +51,13 @@
     
         <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://thequoteshub.in/category/<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?>">
+    <meta property="og:url" content="<?php echo getBaseUrl(); ?>category/<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?>">
     <meta property="og:title" content="<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?> - quotes on thequoteshub | Share Your Wisdom: Create, Inspire, and Connect Through Quotes!">
     <meta property="og:description" content="Explore diverse categories of quotes at theQuoteshub and share your insights with the world.">
       
  
     <!-- Twitter -->
-    <meta property="twitter:url" content="https://thequoteshub.in/categories/<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?>">
+    <meta property="twitter:url" content="<?php echo getBaseUrl(); ?>categories/<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?>">
     <meta property="twitter:title" content="<?= ucwords(decodeCleanAndRemoveTags(decodeAndCleanText($category['category_name']))); ?> - quotes on thequoteshub | Share Your Wisdom: Create, Inspire, and Connect Through Quotes!">
     <meta property="twitter:description" content="Find quote categories that resonate with you at Quoteshub and share your own wisdom!">
     

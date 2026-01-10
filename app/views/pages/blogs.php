@@ -249,7 +249,7 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
 
     <!-- Logo and Copyright -->
     <div class="flex items-center md:flex-row flex-col justify-center space-x-4">
-      <a class="flex items-center justify-center space-x-4" href="https:://www.thequoteshub.in"><img
+      <a class="flex items-center justify-center space-x-4" href="<?php echo getBaseUrl(); ?>"><img
           src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="Website Logo" class="mr-4" />
         <p class="text-xs text-gray-500">&copy; <span><?php echo date("Y"); ?></span>  Quoteshub</p>
       </a>

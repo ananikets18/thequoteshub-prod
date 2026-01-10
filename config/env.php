@@ -135,7 +135,7 @@ function upload($path) {
 define('APP_ENV', env('APP_ENV', 'production'));
 define('APP_DEBUG', env('APP_DEBUG', 'false') === 'true');
 define('APP_NAME', env('APP_NAME', 'The Quotes Hub'));
-define('APP_URL', env('APP_URL', 'https://www.thequoteshub.in'));
+define('APP_URL', env('APP_URL', ''));
 
 // Database
 define('DB_HOST', env('DB_HOST', 'localhost'));
