@@ -1,6 +1,5 @@
 <?php include __DIR__ . '/../components/header.php'; ?>
 <?php
-require_once __DIR__ . '/../../config/utilis.php';
 $baseUrl = getBaseUrl();
 ?>
 <?php
