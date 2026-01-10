@@ -43,9 +43,10 @@ class UserModel
     $stmt->close();
 
     // Insert new user
-    $stmt = $this->conn->prepare("INSERT INTO users (name, username, email, password_hash) VALUES (?, ?, ?, ?)");
+    $stmt = $this->conn->prepare("INSERT INTO users (name, username, email, password_hash, bio) VALUES (?, ?, ?, ?, ?)");
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $stmt->bind_param("ssss", $name, $username, $email, $hashedPassword);
+    $bio = ""; // Default empty bio for new users
+    $stmt->bind_param("sssss", $name, $username, $email, $hashedPassword, $bio);
 
     if ($stmt->execute()) {
         $stmt->close();
@@ -88,11 +89,12 @@ public function getUserIdByEmail($email) {
 
 
 
+
 public function registerWithGoogle($name, $email)
 {
     // Check if the user already exists
     $query = "SELECT id FROM users WHERE email = ? LIMIT 1";
-    $stmt = $this->db->prepare($query);
+    $stmt = $this->conn->prepare($query);
     $stmt->bind_param('s', $email); // 's' denotes the type is a string
     $stmt->execute();
     $stmt->store_result(); // Store the result to get row count
@@ -103,9 +105,20 @@ public function registerWithGoogle($name, $email)
     }
 
     // If user doesn't exist, insert them
-    $query = "INSERT INTO users (name, email, created_at) VALUES (?, ?, NOW())";
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('ss', $name, $email); // 'ss' denotes the types are strings
+    // Generate username from email (before @ symbol)
+    $username = explode('@', $email)[0];
+    // Ensure username is unique by appending random numbers if needed
+    $originalUsername = $username;
+    $counter = 1;
+    while ($this->usernameExists($username)) {
+        $username = $originalUsername . $counter;
+        $counter++;
+    }
+    
+    $bio = ""; // Default empty bio
+    $query = "INSERT INTO users (name, username, email, bio, created_at) VALUES (?, ?, ?, ?, NOW())";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param('ssss', $name, $username, $email, $bio);
 
     $result = $stmt->execute();
     $stmt->close(); // Close the statement
@@ -113,6 +126,19 @@ public function registerWithGoogle($name, $email)
 }
 
 
+
+
+    // Helper method to check if username exists
+    private function usernameExists($username)
+    {
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
+        $exists = $stmt->num_rows > 0;
+        $stmt->close();
+        return $exists;
+    }
 
   public function authenticate($username, $password)
   {

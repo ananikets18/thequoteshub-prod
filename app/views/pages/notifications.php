@@ -20,7 +20,12 @@ if (isset($_SESSION['success_message'])) {
 ?>
 
 <?php 
-$notifications = $this->notificationModel->getAllNotifications($_SESSION['user_id']);
+// Load initial batch of notifications with pagination
+$result = $this->notificationModel->getAllNotifications($_SESSION['user_id'], 20, 0);
+$notifications = $result['notifications'];
+$hasMore = $result['hasMore'];
+$total = $result['total'];
+
 $allRead = true; // Assume all notifications are read initially
 foreach ($notifications as $notification) {
     if ($notification['is_read'] == 0) {
@@ -102,6 +107,18 @@ $followNotifications = array_filter($notifications, fn($n) => $n['type'] === 'fo
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
+            
+            <!-- Load More Button for Likes & Saves -->
+            <div id="loadMoreLikes" class="text-center py-4" style="display: <?php echo $hasMore ? 'block' : 'none'; ?>;">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                    Load More
+                </button>
+            </div>
+            
+            <div id="loadingLikes" class="text-center py-4" style="display: none;">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p class="text-gray-600 mt-2">Loading...</p>
+            </div>
         </div>
 
         <!-- Follows Notifications -->
@@ -133,6 +150,18 @@ $followNotifications = array_filter($notifications, fn($n) => $n['type'] === 'fo
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
+            
+            <!-- Load More Button for Follows -->
+            <div id="loadMoreFollows" class="text-center py-4" style="display: <?php echo $hasMore ? 'block' : 'none'; ?>;">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                    Load More
+                </button>
+            </div>
+            
+            <div id="loadingFollows" class="text-center py-4" style="display: none;">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p class="text-gray-600 mt-2">Loading...</p>
+            </div>
         </div>
 
     </div>
@@ -164,6 +193,11 @@ $followNotifications = array_filter($notifications, fn($n) => $n['type'] === 'fo
 <script>
 
 $(document).ready(function () {
+    let currentOffset = 20; // Start after the initial 20 loaded
+    const limit = 20;
+    let isLoading = false;
+    let currentTab = 'likes';
+    
     // Tab switching logic
     function switchTab(tab) {
         const $likesTab = $('#likesTab');
@@ -171,6 +205,8 @@ $(document).ready(function () {
         const $likesContainer = $('#likesAndSavesContainer');
         const $followsContainer = $('#followsContainer');
 
+        currentTab = tab;
+        
         if (tab === 'likes') {
             $likesTab.addClass('border-blue-500 text-blue-500').removeClass('text-gray-600');
             $followsTab.removeClass('border-blue-500 text-blue-500').addClass('text-gray-600');
@@ -186,6 +222,56 @@ $(document).ready(function () {
         }
     }
 
+    // Function to load more notifications
+    function loadMoreNotifications(type) {
+        if (isLoading) return;
+        
+        isLoading = true;
+        const $loadMoreBtn = type === 'likes' ? $('#loadMoreLikes') : $('#loadMoreFollows');
+        const $loading = type === 'likes' ? $('#loadingLikes') : $('#loadingFollows');
+        const $container = type === 'likes' ? $('#likesAndSavesContainer') : $('#followsContainer');
+        
+        $loadMoreBtn.hide();
+        $loading.show();
+        
+        $.ajax({
+            url: '<?php echo $baseUrl; ?>app/api/load-notifications.php',
+            type: 'GET',
+            data: {
+                offset: currentOffset,
+                limit: limit,
+                type: type === 'likes' ? 'likes_saves' : 'follows'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Remove loading indicators
+                    $loading.before(response.html);
+                    
+                    currentOffset += limit;
+                    
+                    // Show or hide load more button based on hasMore
+                    if (response.hasMore) {
+                        $loadMoreBtn.show();
+                    } else {
+                        $loadMoreBtn.hide();
+                    }
+                } else {
+                    console.error('Error loading notifications:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
+                alert('Failed to load more notifications. Please try again.');
+                $loadMoreBtn.show();
+            },
+            complete: function() {
+                $loading.hide();
+                isLoading = false;
+            }
+        });
+    }
+
     // Default tab activation
     switchTab('likes');
 
@@ -197,6 +283,40 @@ $(document).ready(function () {
     $('#followsTab').on('click', function () {
         switchTab('follows');
     });
+    
+    // Load more button handlers
+    $('#loadMoreLikes button').on('click', function() {
+        loadMoreNotifications('likes');
+    });
+    
+    $('#loadMoreFollows button').on('click', function() {
+        loadMoreNotifications('follows');
+    });
+    
+    // Optional: Infinite scroll (uncomment to enable)
+    /*
+    $(window).on('scroll', function() {
+        if (currentTab === 'likes') {
+            const $container = $('#likesAndSavesContainer');
+            const scrollTop = $(window).scrollTop();
+            const windowHeight = $(window).height();
+            const containerHeight = $container.offset().top + $container.outerHeight();
+            
+            if (scrollTop + windowHeight >= containerHeight - 200 && !isLoading && $('#loadMoreLikes').is(':visible')) {
+                loadMoreNotifications('likes');
+            }
+        } else {
+            const $container = $('#followsContainer');
+            const scrollTop = $(window).scrollTop();
+            const windowHeight = $(window).height();
+            const containerHeight = $container.offset().top + $container.outerHeight();
+            
+            if (scrollTop + windowHeight >= containerHeight - 200 && !isLoading && $('#loadMoreFollows').is(':visible')) {
+                loadMoreNotifications('follows');
+            }
+        }
+    });
+    */
 });
 
 </script>

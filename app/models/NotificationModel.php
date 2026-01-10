@@ -64,10 +64,20 @@ class NotificationModel
     return isset($data['unread_count']) ? (int)$data['unread_count'] : 0;
   }
 
-  // Method to get all notifications for a user
-  public function getAllNotifications($userId)
+  // Method to get all notifications for a user with pagination
+  public function getAllNotifications($userId, $limit = 20, $offset = 0)
 {
     try {
+        // Get total count for pagination
+        $countQuery = "SELECT 
+                        (SELECT COUNT(*) FROM notifications WHERE user_id = ?) + 
+                        (SELECT COUNT(*) FROM follow_notifications WHERE followed_user_id = ?) AS total";
+        $countStmt = $this->conn->prepare($countQuery);
+        $countStmt->bind_param("ii", $userId, $userId);
+        $countStmt->execute();
+        $countResult = $countStmt->get_result();
+        $totalCount = $countResult->fetch_assoc()['total'];
+        
         // Notifications from the 'notifications' table (likes and saves)
         $query1 = "SELECT 
                       n.id, n.user_id, n.sender_id, n.quote_id, n.type, n.created_at, n.is_read, 
@@ -123,9 +133,20 @@ class NotificationModel
             return strtotime($b['created_at']) - strtotime($a['created_at']);
         });
         
-        return $combinedNotifications;
+        // Apply pagination
+        $paginatedNotifications = array_slice($combinedNotifications, $offset, $limit);
+        
+        return [
+            'notifications' => $paginatedNotifications,
+            'total' => $totalCount,
+            'hasMore' => ($offset + $limit) < $totalCount
+        ];
     } catch (Exception $e) {
-        return [];
+        return [
+            'notifications' => [],
+            'total' => 0,
+            'hasMore' => false
+        ];
     }
 }
 
