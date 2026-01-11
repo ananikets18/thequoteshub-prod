@@ -1,4 +1,7 @@
-<?php include __DIR__ . '/../components/header.php'; ?>
+<?php 
+include __DIR__ . '/../components/header.php';
+include_once __DIR__ . '/../../../config/utilis.php';
+?>
 
 <?php
 // Check if user is logged in
@@ -31,8 +34,8 @@ if (!isset($_SESSION['user_id'])) {
           ?>
 
 
-  <?php if ($quote): ?>
-  <form action="<?php echo url('edit-quote/<?php echo $quote['id']; ?>'); ?>" method="post" enctype="multipart/form-data"
+  <?php if (isset($quote) && $quote): ?>
+  <form action="<?php echo url('edit-quote/' . $quote['id']); ?>" method="post" enctype="multipart/form-data"
     class="space-y-6">
     
     <!-- CSRF Token -->
@@ -41,7 +44,7 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Author Name -->
     <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-md">
       <label for="author" class="block text-lg font-medium mb-2">Author Name</label>
-      <input type="text" name="author" id="author" value="<?php echo decodeAndCleanText($quote['author_name']); ?>"
+      <input type="text" name="author" id="author" value="<?php echo htmlspecialchars(decodeAndCleanText($quote['author_name']), ENT_QUOTES, 'UTF-8'); ?>"
         class="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         required>
     </div>
@@ -50,7 +53,7 @@ if (!isset($_SESSION['user_id'])) {
     <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-md">
       <label for="quote_text" class="block text-lg font-medium mb-2">Quote Text</label>
       <textarea name="quote_text" id="quote_text" rows="4"
-        class="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><?php echo decodeAndCleanText($quote['quote_text']); ?></textarea>
+        class="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><?php echo htmlspecialchars(decodeAndCleanText($quote['quote_text']), ENT_QUOTES, 'UTF-8'); ?></textarea>
     </div>
 
     <!-- Submit Button -->

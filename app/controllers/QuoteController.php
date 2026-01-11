@@ -504,45 +504,80 @@ if (empty($errors)) {
         }
 
     public function editQuote($quoteId) {
-    if (!isset($quoteId)) {
-        echo "Quote ID is required.";
-        return;
-    }
+    try {
+        // Validate quote ID
+        if (!isset($quoteId) || !is_numeric($quoteId)) {
+            error_log("editQuote: Invalid quote ID provided: " . var_export($quoteId, true));
+            http_response_code(400);
+            echo "Invalid Quote ID.";
+            return;
+        }
 
-    $quote = $this->quoteModel->getQuoteById($quoteId);
+        // Check if user is authenticated
+        if (!isset($_SESSION['user_id'])) {
+            error_log("editQuote: User not authenticated");
+            header("Location: /login");
+            exit();
+        }
 
-    if (!$quote) {
-        echo "Quote not found.";
-        require_once __DIR__ . '/../views/pages/404-page.php';
-        return;
-    }
+        $quote = $this->quoteModel->getQuoteById($quoteId);
+        
+        // Log the result for debugging
+        error_log("editQuote: Quote ID $quoteId - Result: " . var_export($quote, true));
 
-    $message = '';
+        if (!$quote) {
+            error_log("editQuote: Quote not found for ID: $quoteId");
+            http_response_code(404);
+            echo "Quote not found.";
+            require_once __DIR__ . '/../views/pages/404-page.php';
+            return;
+        }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $author = trim(htmlspecialchars($_POST['author']));
-        $quoteText = trim(htmlentities($_POST['quote_text']));
+        // Check if user owns this quote
+        if ($quote['user_id'] != $_SESSION['user_id']) {
+            error_log("editQuote: User " . $_SESSION['user_id'] . " attempted to edit quote $quoteId owned by " . $quote['user_id']);
+            http_response_code(403);
+            echo "You don't have permission to edit this quote.";
+            return;
+        }
 
-        if (empty($quoteText)) {
-            $message = "Quote Text is required.";
-        } else {
-            // Proceed with updating the quote
-            $updateSuccess = $this->quoteModel->updateQuote($quoteId, $author, $quoteText);
+        $message = '';
 
-            if ($updateSuccess) {
-                // Set the is_edited field to 1
-                $this->quoteModel->markAsEdited($quoteId); // Function to update the is_edited field
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $author = trim(htmlspecialchars($_POST['author']));
+            $quoteText = trim(htmlentities($_POST['quote_text']));
 
-                // Set the success message in the session
-                $_SESSION['message'] = "Quote Edited successfully 🎉!";
+            if (empty($quoteText)) {
+                $message = "Quote Text is required.";
             } else {
-                $message = "Failed to update quote. Please try again.";
+                // Proceed with updating the quote
+                $updateSuccess = $this->quoteModel->updateQuote($quoteId, $author, $quoteText);
+
+                if ($updateSuccess) {
+                    // Set the is_edited field to 1
+                    $this->quoteModel->markAsEdited($quoteId);
+
+                    // Set the success message in the session
+                    $_SESSION['message'] = "Quote Edited successfully 🎉!";
+                    
+                    // Redirect to dashboard
+                    header("Location: /dashboard");
+                    exit();
+                } else {
+                    $message = "Failed to update quote. Please try again.";
+                    error_log("editQuote: Failed to update quote $quoteId");
+                }
             }
         }
-    }
 
-    // Include the view to render the edit form with existing data
-    require_once __DIR__ . '/../views/quotes/edit-quote.php';
+        // Include the view to render the edit form with existing data
+        require_once __DIR__ . '/../views/quotes/edit-quote.php';
+        
+    } catch (Exception $e) {
+        error_log("editQuote: Exception - " . $e->getMessage());
+        http_response_code(500);
+        echo "An error occurred while editing the quote. Please try again later.";
+    }
 }
 
 public function listAuthors() {
