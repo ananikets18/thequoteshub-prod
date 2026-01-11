@@ -59,9 +59,12 @@
     </div>
     
    
-<a href="<?php echo $baseUrl; ?>authors" class="font-semibold block px-4 py-2.5 text-gray-800 hover:bg-emerald-100 hover:text-emerald-700 rounded-full transition-all duration-300">Authors</a>
-
-<?php include __DIR__ . '/search_bar.php'; ?>
+    <!-- Desktop Only: Authors Link and Search Bar -->
+    <div class="hidden lg:flex items-center space-x-4">
+      <a href="<?php echo $baseUrl; ?>authors" class="font-semibold px-4 py-2.5 text-gray-800 hover:bg-emerald-100 hover:text-emerald-700 rounded-full transition-all duration-300">Authors</a>
+      
+      <?php include __DIR__ . '/search_bar.php'; ?>
+    </div>
         
     <div class="hidden lg:flex items-center space-x-4 mt-2 lg:mt-0 ml-auto">
       <?php if (!isset($_SESSION['user_id'])): ?>
