@@ -18,9 +18,18 @@ chown -R www-data:www-data storage
 echo "🗑️ Clearing temporary files..."
 rm -rf storage/temp/*
 
+echo "🤖 Setting up automated bots..."
+if [ -f "scripts/setup_bots.sh" ]; then
+    chmod +x scripts/setup_bots.sh
+    bash scripts/setup_bots.sh
+else
+    echo "⚠️  Bot setup script not found, skipping..."
+fi
+
 echo "🔄 Reloading Nginx..."
 systemctl reload nginx
 
 echo "✅ Deployment complete!"
 echo "🌐 Visit: https://www.thequoteshub.info"
-echo "📊 Check console for any errors"
+echo "📊 Check logs: tail -f storage/logs/quote_bot.log"
+

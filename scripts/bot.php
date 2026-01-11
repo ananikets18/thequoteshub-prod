@@ -50,140 +50,149 @@ $logoutUrl = APP_URL . "/logout";
 
 $cookieFile = __DIR__ . "/../storage/temp/cookies.txt";
 
-while (true) {
-    // Clear cookies before login to avoid session issues
-    file_put_contents($cookieFile, "");
+// Log execution start with timestamp
+echo "\n" . str_repeat("=", 60) . "\n";
+echo "[" . date('Y-m-d H:i:s') . "] Quote Creation Bot Started\n";
+echo str_repeat("=", 60) . "\n";
 
-    // Pick a random user
-    $randomUser = $users[array_rand($users)];
-    $username = $randomUser[$usernameIndex];
-    $password = $randomUser[$passwordIndex];
+// Clear cookies before login to avoid session issues
+file_put_contents($cookieFile, "");
 
-    echo "\n[INFO] Trying to log in as: $username\n";
+// Pick a random user
+$randomUser = $users[array_rand($users)];
+$username = $randomUser[$usernameIndex];
+$password = $randomUser[$passwordIndex];
 
-    $ch = curl_init();
+echo "[INFO] Trying to log in as: $username\n";
 
-    // Get login page (to maintain session)
+$ch = curl_init();
+
+// Get login page (to maintain session)
+curl_setopt_array($ch, [
+    CURLOPT_URL => $loginUrl,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_COOKIEJAR => $cookieFile,
+    CURLOPT_COOKIEFILE => $cookieFile,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYHOST => 2,
+]);
+
+$loginPage = curl_exec($ch);
+
+if (curl_errno($ch)) {
+    echo "[ERROR] cURL Error: " . curl_error($ch) . "\n";
+    curl_close($ch);
+    exit(1);
+}
+
+// Send login request
+curl_setopt_array($ch, [
+    CURLOPT_URL => $loginUrl,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => http_build_query([
+        'username' => $username,
+        'password' => $password,
+    ]),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_COOKIEJAR => $cookieFile,
+    CURLOPT_COOKIEFILE => $cookieFile,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYHOST => 2,
+]);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (curl_errno($ch)) {
+    echo "[ERROR] cURL Error: " . curl_error($ch) . "\n";
+    curl_close($ch);
+    exit(1);
+}
+
+if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
+    echo "[SUCCESS] Logged in as: $username\n";
+
+    // Pick a random quote
+    $randomQuote = $quotes[array_rand($quotes)];
+    $authorName = $randomQuote[$authorIndex];
+    $quoteText = $randomQuote[$quoteIndex];
+    $quoteCategory = $randomQuote[$categoryIndex];
+
+    echo "[INFO] Creating quote: \"$quoteText\" by $authorName under category '$quoteCategory'\n";
+
+    // Fetch category dropdown options
     curl_setopt_array($ch, [
-        CURLOPT_URL => $loginUrl,
+        CURLOPT_URL => $createQuoteUrl,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieFile,
         CURLOPT_COOKIEFILE => $cookieFile,
     ]);
 
-    $loginPage = curl_exec($ch);
+    $createPage = curl_exec($ch);
 
-    // Send login request
+    // Extract available categories from the dropdown
+    preg_match_all('/<option value="(\d+)">(.*?)<\/option>/', $createPage, $categoryMatches, PREG_SET_ORDER);
+    $categoryId = 0;
+
+    foreach ($categoryMatches as $match) {
+        if (trim($match[2]) === trim($quoteCategory)) {
+            $categoryId = $match[1];
+            break;
+        }
+    }
+
+    if ($categoryId == 0) {
+        echo "[WARNING] Category '$quoteCategory' not found in dropdown. Creating a new category.\n";
+    }
+
+    // Submit quote creation form
     curl_setopt_array($ch, [
-        CURLOPT_URL => $loginUrl,
+        CURLOPT_URL => $createQuoteUrl,
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => http_build_query([
-            'username' => $username,
-            'password' => $password,
+            'author_name' => $authorName,
+            'quote_text' => $quoteText,
+            'category_id' => $categoryId,
+            'new_category' => ($categoryId == 0 ? $quoteCategory : ''),
         ]),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieFile,
         CURLOPT_COOKIEFILE => $cookieFile,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
     ]);
 
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
-        echo "[SUCCESS] Logged in as: $username\n";
-
-        // Pick a random quote
-        $randomQuote = $quotes[array_rand($quotes)];
-        $authorName = $randomQuote[$authorIndex];
-        $quoteText = $randomQuote[$quoteIndex];
-        $quoteCategory = $randomQuote[$categoryIndex];
-
-        echo "[INFO] Creating quote: \"$quoteText\" by $authorName under category '$quoteCategory'\n";
-
-        // Fetch category dropdown options
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $createQuoteUrl,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_COOKIEJAR => $cookieFile,
-            CURLOPT_COOKIEFILE => $cookieFile,
-        ]);
-
-        $createPage = curl_exec($ch);
-
-        // Extract available categories from the dropdown
-        preg_match_all('/<option value="(\d+)">(.*?)<\/option>/', $createPage, $categoryMatches, PREG_SET_ORDER);
-        $categoryId = 0;
-
-        foreach ($categoryMatches as $match) {
-            if (trim($match[2]) === trim($quoteCategory)) {
-                $categoryId = $match[1];
-                break;
-            }
-        }
-
-        if ($categoryId == 0) {
-            echo "[WARNING] Category '$quoteCategory' not found in dropdown. Creating a new category.\n";
-        }
-
-        // Submit quote creation form
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $createQuoteUrl,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query([
-                'author_name' => $authorName,
-                'quote_text' => $quoteText,
-                'category_id' => $categoryId,
-                'new_category' => ($categoryId == 0 ? $quoteCategory : ''),
-            ]),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_COOKIEJAR => $cookieFile,
-            CURLOPT_COOKIEFILE => $cookieFile,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-        ]);
-
-        $quoteResponse = curl_exec($ch);
-        echo "[DEBUG] Sending data: " . json_encode([
-            'author_name' => $authorName,
-            'quote_text' => $quoteText,
-            'category_id' => $categoryId,
-            'new_category' => ($categoryId == 0 ? $quoteCategory : ''),
-        ], JSON_PRETTY_PRINT) . "\n";
-
-        if (strpos($quoteResponse, "Quote created successfully") !== false) {
-            echo "[SUCCESS] Quote created successfully.\n";
-        } else {
-            echo "[ERROR] Failed to create quote.\n";
-        }
-
+    $quoteResponse = curl_exec($ch);
+    
+    if (strpos($quoteResponse, "Quote created successfully") !== false) {
+        echo "[SUCCESS] Quote created successfully.\n";
     } else {
-        echo "[ERROR] Login failed for: $username\n";
+        echo "[ERROR] Failed to create quote.\n";
+        echo "[DEBUG] Response snippet: " . substr($quoteResponse, 0, 200) . "...\n";
     }
 
-    // Wait for 30 minutes (1800 seconds)
-    sleep(1800);
-
-    // Logout process
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $logoutUrl,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_COOKIEJAR => $cookieFile,
-        CURLOPT_COOKIEFILE => $cookieFile,
-    ]);
-
-    curl_exec($ch);
-    curl_close($ch);
-
-    echo "[INFO] Logged out: $username\n";
-
-    sleep(2);
+} else {
+    echo "[ERROR] Login failed for: $username (HTTP $httpCode)\n";
 }
+
+// Logout process
+curl_setopt_array($ch, [
+    CURLOPT_URL => $logoutUrl,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_COOKIEJAR => $cookieFile,
+    CURLOPT_COOKIEFILE => $cookieFile,
+]);
+
+curl_exec($ch);
+curl_close($ch);
+
+echo "[INFO] Logged out: $username\n";
+echo "[" . date('Y-m-d H:i:s') . "] Quote Creation Bot Finished\n";
+echo str_repeat("=", 60) . "\n";
 
 ?>

@@ -37,101 +37,134 @@ $indexUrl = APP_URL . "/"; // Main page where quotes are listed
 $logoutUrl = APP_URL . "/logout";
 $cookieFile = __DIR__ . "/../storage/temp/cookies.txt";
 
-while (true) {
-    file_put_contents($cookieFile, ""); // Clear cookies
+// Log execution start with timestamp
+echo "\n" . str_repeat("=", 60) . "\n";
+echo "[" . date('Y-m-d H:i:s') . "] Like & Save Bot Started\n";
+echo str_repeat("=", 60) . "\n";
 
-    $randomUser = $users[array_rand($users)];
-    $username = $randomUser[$usernameIndex];
-    $password = $randomUser[$passwordIndex];
+file_put_contents($cookieFile, ""); // Clear cookies
 
-    echo "[INFO] Trying to log in as: $username\n";
+$randomUser = $users[array_rand($users)];
+$username = $randomUser[$usernameIndex];
+$password = $randomUser[$passwordIndex];
 
-    $ch = curl_init();
+echo "[INFO] Trying to log in as: $username\n";
 
-    // Login request
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $loginUrl,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => http_build_query([ 'username' => $username, 'password' => $password ]),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_COOKIEJAR => $cookieFile,
-        CURLOPT_COOKIEFILE => $cookieFile,
-    ]);
+$ch = curl_init();
 
-    $loginResponse = curl_exec($ch);
-    if (!$loginResponse) {
-        echo "[ERROR] cURL Error: " . curl_error($ch) . "\n";
-        break;
-    }
-    echo "[INFO] Login response received.\n";
+// Login request
+curl_setopt_array($ch, [
+    CURLOPT_URL => $loginUrl,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => http_build_query([ 'username' => $username, 'password' => $password ]),
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_COOKIEJAR => $cookieFile,
+    CURLOPT_COOKIEFILE => $cookieFile,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYHOST => 2,
+]);
 
-    // Visit the main page and extract quote IDs
-    curl_setopt($ch, CURLOPT_URL, $indexUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $pageHtml = curl_exec($ch);
+$loginResponse = curl_exec($ch);
+if (!$loginResponse || curl_errno($ch)) {
+    echo "[ERROR] cURL Error: " . curl_error($ch) . "\n";
+    curl_close($ch);
+    exit(1);
+}
+echo "[SUCCESS] Login response received.\n";
 
-    if (!$pageHtml) {
-        echo "[ERROR] Failed to fetch quotes page.\n";
-        curl_close($ch);
-        break;
-    }
+// Visit the main page and extract quote IDs
+curl_setopt($ch, CURLOPT_URL, $indexUrl);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, false);
+$pageHtml = curl_exec($ch);
 
-    // Extract quote IDs using regex
-    preg_match_all('/\/quote\/(\d+)/', $pageHtml, $matches);
-    $quoteIds = array_unique($matches[1]);
+if (!$pageHtml || curl_errno($ch)) {
+    echo "[ERROR] Failed to fetch quotes page: " . curl_error($ch) . "\n";
+    curl_close($ch);
+    exit(1);
+}
 
-    if (empty($quoteIds)) {
-        echo "[ERROR] No quotes found.\n";
-        curl_close($ch);
-        break;
-    }
+// Extract quote IDs using regex
+preg_match_all('/\/quote\/(\d+)/', $pageHtml, $matches);
+$quoteIds = array_unique($matches[1]);
 
-    echo "[INFO] Found " . count($quoteIds) . " quotes.\n";
+if (empty($quoteIds)) {
+    echo "[ERROR] No quotes found on the page.\n";
+    curl_close($ch);
+    exit(1);
+}
 
-    // **LIKE & SAVE LATEST QUOTES**
-    $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quotes
-    foreach ($latestQuoteIds as $quoteId) {
-        echo "[INFO] Liking & saving latest Quote ID: $quoteId\n";
-        
-        // Like
-        $likeUrl = APP_URL . "/quote/$quoteId/like";
-        curl_setopt($ch, CURLOPT_URL, $likeUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_exec($ch);
-        echo "[SUCCESS] Liked Quote ID: $quoteId\n";
+echo "[INFO] Found " . count($quoteIds) . " quotes.\n";
 
-        // Save
-        $saveUrl = APP_URL . "/quote/$quoteId/save";
-        curl_setopt($ch, CURLOPT_URL, $saveUrl);
-        curl_exec($ch);
-        echo "[SUCCESS] Saved Quote ID: $quoteId\n";
-    }
-
-    // **LIKE & SAVE A RANDOM QUOTE**
-    $randomQuoteId = $quoteIds[array_rand($quoteIds)];
-    echo "[INFO] Liking & saving random Quote ID: $randomQuoteId\n";
+// **LIKE & SAVE LATEST QUOTES**
+$latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quotes
+foreach ($latestQuoteIds as $quoteId) {
+    echo "[INFO] Processing latest Quote ID: $quoteId\n";
     
     // Like
-    $likeUrl = APP_URL . "/quote/$randomQuoteId/like";
+    $likeUrl = APP_URL . "/quote/$quoteId/like";
     curl_setopt($ch, CURLOPT_URL, $likeUrl);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_exec($ch);
-    echo "[SUCCESS] Liked Random Quote ID: $randomQuoteId\n";
+    curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+    $likeResult = curl_exec($ch);
+    if (!curl_errno($ch)) {
+        echo "[SUCCESS] Liked Quote ID: $quoteId\n";
+    } else {
+        echo "[ERROR] Failed to like Quote ID: $quoteId - " . curl_error($ch) . "\n";
+    }
 
     // Save
-    $saveUrl = APP_URL . "/quote/$randomQuoteId/save";
+    $saveUrl = APP_URL . "/quote/$quoteId/save";
     curl_setopt($ch, CURLOPT_URL, $saveUrl);
-    curl_exec($ch);
-    echo "[SUCCESS] Saved Random Quote ID: $randomQuoteId\n";
-
-    // Logout
-    curl_setopt($ch, CURLOPT_URL, $logoutUrl);
-    curl_exec($ch);
-    curl_close($ch);
-
-    echo "[INFO] Logged out: $username\n";
-    sleep(60); // Wait for 1 minute before repeating
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+    $saveResult = curl_exec($ch);
+    if (!curl_errno($ch)) {
+        echo "[SUCCESS] Saved Quote ID: $quoteId\n";
+    } else {
+        echo "[ERROR] Failed to save Quote ID: $quoteId - " . curl_error($ch) . "\n";
+    }
+    
+    usleep(500000); // Wait 0.5 seconds between requests
 }
+
+// **LIKE & SAVE A RANDOM QUOTE**
+$randomQuoteId = $quoteIds[array_rand($quoteIds)];
+echo "[INFO] Processing random Quote ID: $randomQuoteId\n";
+
+// Like
+$likeUrl = APP_URL . "/quote/$randomQuoteId/like";
+curl_setopt($ch, CURLOPT_URL, $likeUrl);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+$likeResult = curl_exec($ch);
+if (!curl_errno($ch)) {
+    echo "[SUCCESS] Liked Random Quote ID: $randomQuoteId\n";
+} else {
+    echo "[ERROR] Failed to like Quote ID: $randomQuoteId - " . curl_error($ch) . "\n";
+}
+
+// Save
+$saveUrl = APP_URL . "/quote/$randomQuoteId/save";
+curl_setopt($ch, CURLOPT_URL, $saveUrl);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+$saveResult = curl_exec($ch);
+if (!curl_errno($ch)) {
+    echo "[SUCCESS] Saved Random Quote ID: $randomQuoteId\n";
+} else {
+    echo "[ERROR] Failed to save Quote ID: $randomQuoteId - " . curl_error($ch) . "\n";
+}
+
+// Logout
+curl_setopt($ch, CURLOPT_URL, $logoutUrl);
+curl_setopt($ch, CURLOPT_POST, false);
+curl_exec($ch);
+curl_close($ch);
+
+echo "[INFO] Logged out: $username\n";
+echo "[" . date('Y-m-d H:i:s') . "] Like & Save Bot Finished\n";
+echo str_repeat("=", 60) . "\n";
 
 ?>
