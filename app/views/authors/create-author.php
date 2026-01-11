@@ -17,6 +17,8 @@
         <div id="form-message" class="mb-4"></div>
 
        <form id="author_form" action="<?php echo url('save-author'); ?>" method="POST" enctype="multipart/form-data"  class="space-y-6">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
             <!-- Author Name and Profession -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </script>
         <?php else: ?>
             <form method="POST" action="" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="email" value="<?php echo $email; ?>">
 

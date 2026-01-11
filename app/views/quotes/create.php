@@ -23,6 +23,9 @@ $baseUrl = getBaseUrl(); // Replace with your actual base URL
   <?php endif; ?>
 
 <form method="POST" class="space-y-6">
+  <!-- CSRF Token -->
+  <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+  
   <!-- Author and Quote Section -->
   <div class="flex flex-col sm:flex-row sm:space-x-4">
     <!-- Author Name -->

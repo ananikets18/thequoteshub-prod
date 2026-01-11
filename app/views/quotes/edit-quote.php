@@ -34,6 +34,9 @@ if (!isset($_SESSION['user_id'])) {
   <?php if ($quote): ?>
   <form action="<?php echo url('edit-quote/<?php echo $quote['id']; ?>'); ?>" method="post" enctype="multipart/form-data"
     class="space-y-6">
+    
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
     <!-- Author Name -->
     <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-md">
