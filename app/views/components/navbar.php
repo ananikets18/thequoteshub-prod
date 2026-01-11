@@ -130,16 +130,8 @@
   <!-- Mobile Menu (Hidden by default) -->
   <div id="mobileMenu" class="hidden lg:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-lg">
     <div class="container mx-auto px-4 py-4 space-y-3">
-      <!-- Search Bar (Mobile) -->
-      <div class="relative">
-        <input type="text" placeholder="Search quotes..." 
-               class="w-full px-4 py-2.5 pl-10 border border-gray-200 rounded-full focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all outline-none text-sm shadow-sm">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"></path>
-          </svg>
-        </div>
-      </div>
+      <!-- Search Bar (Mobile) - Using mobile-specific search component -->
+      <?php include __DIR__ . '/search_bar_mobile.php'; ?>
       
       <!-- Navigation Links -->
       <div class="space-y-2">
