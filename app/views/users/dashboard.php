@@ -124,8 +124,34 @@ function loadQuotes() {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.ok ? response.json() : Promise.reject(response))
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text(); // Get as text first
+    })
+    .then(text => {
+        // Try to parse JSON, handle empty responses
+        if (!text || text.trim() === '') {
+            console.error('Empty response received');
+            return [];
+        }
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            console.error('Response text:', text);
+            throw new Error('Invalid JSON response');
+        }
+    })
     .then(data => {
+        // Handle error responses
+        if (data.error) {
+            console.error('Server error:', data.error);
+            $('#quotesTable').html(`<p class="text-center text-red-500">${data.error}</p>`);
+            return;
+        }
+        
         // console.log(data);
         if (Array.isArray(data) && data.length > 0) {
             let gridHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-7xl mx-auto p-2.5">';
@@ -195,7 +221,7 @@ function loadQuotes() {
     })
          .catch(error => {
             console.error('Error loading quotes:', error);
-            document.getElementById('quotesTable').innerHTML = `<p class="text-red-500 font-bold">Failed to load quotes.</p>`;
+            document.getElementById('quotesTable').innerHTML = `<p class="text-red-500 font-bold">Failed to load quotes. ${error.message}</p>`;
         });
 }
 

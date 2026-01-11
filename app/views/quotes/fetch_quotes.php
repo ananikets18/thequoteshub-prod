@@ -8,11 +8,15 @@ include_once __DIR__ . '/../../../config/utilis.php';
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *"); // Adjust the origin as needed
 
-// Check if the user is authenticated
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'User not authenticated']);
-    exit;
-}
+// Clear any output buffers to ensure clean JSON
+if (ob_get_length()) ob_clean();
+
+try {
+    // Check if the user is authenticated
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['error' => 'User not authenticated']);
+        exit;
+    }
 
 // Get user ID from the session
 $id = $_SESSION['user_id'];
@@ -95,8 +99,14 @@ if ($result->num_rows > 0) {
     }
     echo json_encode($quotes); // Return the quotes array as JSON
 } else {
-    echo json_encode(['message' => 'No quotes found.']);
+    echo json_encode([]); // Return empty array instead of message object
 }
 
 $stmt->close();
 $conn->close();
+
+} catch (Exception $e) {
+    // Log the error and return a clean JSON error response
+    error_log("Error in fetch_quotes.php: " . $e->getMessage());
+    echo json_encode(['error' => 'An error occurred while fetching quotes']);
+}
