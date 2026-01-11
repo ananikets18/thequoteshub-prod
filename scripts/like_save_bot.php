@@ -52,11 +52,43 @@ echo "[INFO] Trying to log in as: $username\n";
 
 $ch = curl_init();
 
-// Login request
+// Get login page (to maintain session and extract CSRF token)
+curl_setopt_array($ch, [
+    CURLOPT_URL => $loginUrl,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_COOKIEJAR => $cookieFile,
+    CURLOPT_COOKIEFILE => $cookieFile,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYHOST => 2,
+]);
+
+$loginPage = curl_exec($ch);
+
+if (curl_errno($ch)) {
+    echo "[ERROR] cURL Error: " . curl_error($ch) . "\n";
+    curl_close($ch);
+    exit(1);
+}
+
+// Extract CSRF token from login page
+$csrfToken = '';
+if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $loginPage, $matches)) {
+    $csrfToken = $matches[1];
+    echo "[INFO] CSRF token extracted successfully\n";
+} else {
+    echo "[WARNING] CSRF token not found in login page\n";
+}
+
+// Login request with CSRF token
 curl_setopt_array($ch, [
     CURLOPT_URL => $loginUrl,
     CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => http_build_query([ 'username' => $username, 'password' => $password ]),
+    CURLOPT_POSTFIELDS => http_build_query([
+        'username' => $username,
+        'password' => $password,
+        'csrf_token' => $csrfToken,
+    ]),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_COOKIEJAR => $cookieFile,
