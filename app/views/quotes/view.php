@@ -80,7 +80,7 @@ $unreadCount = isset($_SESSION['unread_count']) ? $_SESSION['unread_count'] : 0;
       <nav class="container mx-auto px-4 py-2 flex flex-wrap items-center justify-between">
         <div class="flex items-center justify-between w-full lg:w-auto">
           <div class="logo_wrapper">
-            <a href="/">
+            <a href="<?php echo $baseUrl; ?>">
               <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
             </a>
           </div>
@@ -321,11 +321,11 @@ $baseUrl = getBaseUrl(); // Replace with your actual base URL
                       data-quote-id="<?php echo $quote['id']; ?>" 
                       class="text-gray-500 text-red-500 focus:outline-none flex items-center text-sm md:text-md md:space-x-1 like-button <?php echo isset($_SESSION['user_id']) ? 'logged-in' : ''; ?>"
                       style="cursor: <?php echo isset($_SESSION['user_id']) ? 'default' : 'pointer'; ?>">
-                      <svg class="w-3 h-3 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                      </svg>
-                      <!-- Like count -->
+            <a href="<?php echo $baseUrl; ?>">
+              <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+              </svg>
+            </a>          <!-- Like count -->
                       <span class="like-count font-medium capitalize text-xs md:text-sm ml-1">
                         <?php echo $likeCount; ?> likes
                       </span>

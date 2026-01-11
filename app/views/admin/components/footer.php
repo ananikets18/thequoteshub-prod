@@ -16,7 +16,7 @@
     <div class="flex md:flex-row flex-col items-center justify-center space-x-4">
       <a class="flex items-center justify-center space-x-4" href="<?php echo getBaseUrl(); ?>">
           <?php $baseUrlN = getBaseUrl(); ?>
-          <img src="<?php echo $baseUrlN; ?>public/uploads/images/logo.svg"
+          <img src="<?php echo $baseUrlN; ?>public/uploads/images/logo_clean.svg"
           alt="Website Logo" class="mr-4" />
         <p class="text-xs text-gray-500">&copy; <span><?php echo date("Y"); ?></span> Quoteshub</p>
       </a>

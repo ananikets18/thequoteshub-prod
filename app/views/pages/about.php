@@ -13,7 +13,7 @@ $baseUrl = getBaseUrl();
 <!-- Branding Image Section -->
 <section class="py-12 bg-gray-100">
   <div class="container mx-auto px-6 text-center">
-    <img src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="TheQuotesHub Logo"
+    <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="TheQuotesHub Logo"
       class="mx-auto rounded-lg shadow-md" style="max-width: 300px;">
     <p class="mt-4 text-lg text-gray-600">
       TheQuotesHub is a platform dedicated to sharing wisdom, inspiration, and thoughtful quotes from around the world.

@@ -90,7 +90,7 @@ if (isset($_SESSION['user_id'])) {
       <nav class="container mx-auto px-4 py-2 flex flex-wrap items-center justify-between">
         <div class="flex items-center justify-between w-full lg:w-auto">
           <div class="logo_wrapper">
-            <a href="/public_html">
+            <a href="<?php echo $baseUrl; ?>">
               <img  src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" />
             </a>
           </div>

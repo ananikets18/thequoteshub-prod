@@ -118,7 +118,7 @@ $csrfToken = generateCsrfToken();
             "Every new beginning is a step closer to your dreams. Welcome to the first chapter of your journey!" 🌟
           </p>
           <p>
-            <a href="/" class="btn btn-outline-light btn-sm" style="font-size: 1.1rem;">Back to Home</a>
+            <a href="<?php echo getBaseUrl(); ?>" class="btn btn-outline-light btn-sm" style="font-size: 1.1rem;">Back to Home</a>
           </p>
         </div>
 
@@ -208,7 +208,7 @@ $csrfToken = generateCsrfToken();
             if (response.status === 'success') {
               $('#form-message').html('<div class="alert alert-success">' + response.message + '</div>');
               setTimeout(function () {
-                window.location.href = '/login'; 
+                window.location.href = '<?php echo getBaseUrl(); ?>login'; 
               }, 2000);
             } else {
               $('#form-message').html('<div class="alert alert-danger">' + response.message + '</div>');
@@ -276,7 +276,7 @@ function handleCredentialResponse(response) {
         if (response.status === 'success') {
             $('#form-message').html('<div class="alert alert-success">' + response.message + '</div>');
             setTimeout(function () {
-                window.location.href = '/dashboard';
+                window.location.href = '<?php echo getBaseUrl(); ?>dashboard';
             }, 2000);
         } else {
             $('#form-message').html('<div class="alert alert-danger">' + response.message + '</div>');

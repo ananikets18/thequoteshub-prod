@@ -12,7 +12,7 @@
     <div class="flex items-center justify-between w-full lg:w-auto">
       <!-- Logo -->
       <div class="logo_wrapper">
-        <a href="/public_html" class="transition-opacity duration-300 hover:opacity-80">
+        <a href="<?php echo $baseUrl; ?>" class="transition-opacity duration-300 hover:opacity-80">
           <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" class="h-8 md:h-10 animate-fade-in" />
         </a>
       </div>

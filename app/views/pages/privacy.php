@@ -14,7 +14,7 @@ $baseUrl = getBaseUrl();
 <!-- Branding Image Section -->
 <section class="py-12 bg-gray-100">
   <div class="container mx-auto px-6 text-center">
-    <img src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="Privacy Protection"
+    <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="Privacy Protection"
       class="mx-auto rounded-lg shadow-md">
     <p class="mt-4 text-lg text-gray-600">
       At TheQuotesHub, we are committed to safeguarding your privacy and ensuring transparency.
@@ -71,7 +71,7 @@ $baseUrl = getBaseUrl();
         encourage you to review them.
       </p>
       <div class="mt-6">
-        <img src="<?php echo $baseUrl; ?>public/uploads/images/logo.svg" alt="Third-Party Services"
+        <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="Third-Party Services"
           class="mx-auto rounded-lg shadow-md">
       </div>
     </div>
