@@ -1,5 +1,10 @@
 {
+    "name": "ananikets18/thequoteshub",
+    "description": "QuotesHub production application",
+    "type": "project",
+    "license": "proprietary",
     "require": {
+        "php": ">=8.1",
         "phpoffice/phpspreadsheet": "^4.0"
     }
 }

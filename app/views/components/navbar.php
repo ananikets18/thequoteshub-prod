@@ -16,7 +16,7 @@
           <img src="<?php echo $baseUrl; ?>public/uploads/images/logo_clean.svg" alt="quoteshub-logo" class="h-8 md:h-10 animate-fade-in" />
         </a>
       </div>
-
+  
       <!-- Mobile Right Section -->
       <div class="ml-auto lg:hidden flex items-center space-x-2">
         <?php if (!isset($_SESSION['user_id'])): ?>
