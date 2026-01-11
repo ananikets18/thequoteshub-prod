@@ -239,8 +239,14 @@ function deleteQuote(button) {
     if (confirm('Are you sure you want to delete this quote?')) {
         fetch(`${baseUrl}app/views/quotes/delete-quote.php`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: quoteId })
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '<?php echo generateCsrfToken(); ?>'
+            },
+            body: JSON.stringify({ 
+                id: quoteId,
+                csrf_token: '<?php echo generateCsrfToken(); ?>'
+            })
         })
         .then(response => response.json())
         .then(data => data.success ? alert('Quote deleted successfully.') && loadQuotes() : alert('Failed to delete quote: ' + data.message))

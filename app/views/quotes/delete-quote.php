@@ -1,6 +1,7 @@
 <?php
 session_start();
 include __DIR__ . '/../../../config/database.php';
+include_once __DIR__ . '/../../../config/utilis.php';
 
 // Set the response header to JSON
 header('Content-Type: application/json');
@@ -13,6 +14,12 @@ if (!isset($_SESSION['user_id'])) {
 
 // Get the input data
 $data = json_decode(file_get_contents('php://input'), true);
+
+// Validate CSRF token
+if (!isset($data['csrf_token']) || !validateCsrfToken($data['csrf_token'])) {
+    echo json_encode(['success' => false, 'error' => 'Invalid security token.']);
+    exit;
+}
 
 // Validate input
 if (!isset($data['id']) || !is_numeric($data['id'])) {
