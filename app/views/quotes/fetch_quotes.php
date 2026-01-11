@@ -2,9 +2,12 @@
 
 session_start();
 
-// Set the response header to JSON
+// Set the response headers
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Start output buffering to catch any stray output
 ob_start();
@@ -15,14 +18,17 @@ try {
     
     // Check if the user is authenticated
     if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
         throw new Exception('User not authenticated');
     }
 
     // Get user ID from the session
     $id = $_SESSION['user_id'];
 
-    // Determine the filter from the URL
+    // Filter validation - whitelist allowed filters
+    $allowedFilters = ['recently_created', 'edited', 'most_liked', 'most_saved'];
     $filter = $_GET['filter'] ?? 'recently_created';
+    $filter = in_array($filter, $allowedFilters) ? $filter : 'recently_created';
 
     $query = "
         SELECT q.id, q.author_name, q.quote_text, 
@@ -36,13 +42,21 @@ try {
         LEFT JOIN likes l ON q.id = l.quote_id
         LEFT JOIN saves s ON q.id = s.quote_id
         WHERE q.user_id = ?
-        GROUP BY q.id
     ";
 
+    // Add filter condition for edited quotes
+    if ($filter == 'edited') {
+        $query .= " AND q.is_edited = 1";
+    }
+
+    // GROUP BY all non-aggregated columns for ONLY_FULL_GROUP_BY compatibility
+    $query .= " GROUP BY q.id, q.author_name, q.quote_text, q.created_at, q.updated_at, q.view_count, q.is_edited";
+
+    // Add sorting based on filter
     if ($filter == 'recently_created') {
         $query .= " ORDER BY q.created_at DESC";
     } elseif ($filter == 'edited') {
-        $query .= " HAVING q.is_edited = 1 ORDER BY q.updated_at DESC";
+        $query .= " ORDER BY q.updated_at DESC";
     } elseif ($filter == 'most_liked') {
         $query .= " ORDER BY total_likes DESC";
     } elseif ($filter == 'most_saved') {
@@ -51,11 +65,13 @@ try {
 
     $stmt = $conn->prepare($query);
     if ($stmt === false) {
+        http_response_code(500);
         throw new Exception('Database prepare failed: ' . $conn->error);
     }
 
     $stmt->bind_param("i", $id);
     if (!$stmt->execute()) {
+        http_response_code(500);
         throw new Exception('Query execution failed: ' . $stmt->error);
     }
 
@@ -70,9 +86,9 @@ try {
             $authorName = decodeCleanAndRemoveTags(decodeAndCleanText($row['author_name']));
             $quoteText = decodeCleanAndRemoveTags(decodeAndCleanText($row['quote_text']));
             
-            // Limit to 20 characters and add ellipsis if necessary
-            $authorName = strlen($authorName) > 20 ? substr($authorName, 0, 20) . '...' : $authorName;
-            $quoteText = strlen($quoteText) > 20 ? substr($quoteText, 0, 20) . '...' : $quoteText;
+            // UTF-8 safe string truncation
+            $authorName = mb_strlen($authorName) > 20 ? mb_substr($authorName, 0, 20) . '...' : $authorName;
+            $quoteText = mb_strlen($quoteText) > 20 ? mb_substr($quoteText, 0, 20) . '...' : $quoteText;
 
             $isEdited = $row['is_edited'];
             $totalLikes = $row['total_likes'];
@@ -101,7 +117,8 @@ try {
     // Discard any output that was captured
     ob_end_clean();
     
-    // Output the JSON
+    // Success response with 200 status
+    http_response_code(200);
     echo json_encode($quotes);
 
 } catch (Exception $e) {
@@ -111,6 +128,9 @@ try {
     // Log the error
     error_log("Error in fetch_quotes.php: " . $e->getMessage());
     
-    // Return error as JSON
+    // Return error as JSON with appropriate status code (if not already set)
+    if (http_response_code() === 200) {
+        http_response_code(500);
+    }
     echo json_encode(['error' => $e->getMessage()]);
 }
