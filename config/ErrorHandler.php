@@ -20,12 +20,12 @@ class ErrorHandler
     public static function init()
     {
         // Set log file path
-        self::$logFile = __DIR__ . '/../storage/logs/error.log';
+        self::$logFile = dirname( __DIR__) . '/storage/logs/error.log';
         
         // Ensure logs directory exists
         $logsDir = dirname(self::$logFile);
         if (!file_exists($logsDir)) {
-            mkdir($logsDir, 0755, true);
+            mkdir($logsDir, 0775, true);
         }
 
         // Generate correlation ID for this request
