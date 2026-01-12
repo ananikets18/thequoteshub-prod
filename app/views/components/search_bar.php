@@ -22,7 +22,10 @@ include_once  __DIR__ . '/../../../config/utilis.php';
 </div>
 
 <script>
-const baseUrl = '<?php echo url(''); ?>';
+// Declare baseUrl only if not already defined
+if (typeof baseUrl === 'undefined') {
+    var baseUrl = '<?php echo url(''); ?>';
+}
 
 $(document).ready(function () {
     $('#search_query').on('input', function () {

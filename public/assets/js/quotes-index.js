@@ -1,6 +1,7 @@
 /**
  * Quotes Index Page - Main Application
  * Initializes all modules for the quotes index page
+ * @version 1.0.1
  */
 
 (function () {

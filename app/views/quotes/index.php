@@ -15,7 +15,7 @@ $data['pageTitle'] = 'QuotesHub - Share Your Wisdom: Create, Inspire, and Connec
 $data['pageDescription'] = 'Discover inspiring quotes, share your wisdom, and connect with fellow quote enthusiasts';
 $data['pageKeywords'] = 'quotes, inspiration, wisdom, share quotes, quote of the day';
 $data['additionalCSS'] = ['public/assets/css/quotes-index.css'];
-$data['additionalJS'] = ['public/assets/js/quotes-index.js'];
+$data['additionalJS'] = ['public/assets/js/quotes-index.js?v=1.0.1'];
 $data['useModules'] = true;
 
 // Render the view using the Template Engine
