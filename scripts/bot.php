@@ -132,7 +132,7 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
 
     echo "[INFO] Creating quote: \"$quoteText\" by $authorName under category '$quoteCategory'\n";
 
-    // Fetch category dropdown options
+    // Fetch category dropdown options and CSRF token
     curl_setopt_array($ch, [
         CURLOPT_URL => $createQuoteUrl,
         CURLOPT_RETURNTRANSFER => true,
@@ -142,6 +142,15 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
     ]);
 
     $createPage = curl_exec($ch);
+
+    // Extract CSRF token from create-quote page
+    $createCsrfToken = '';
+    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $createPage, $csrfMatches)) {
+        $createCsrfToken = $csrfMatches[1];
+        echo "[INFO] CSRF token extracted from create-quote page\n";
+    } else {
+        echo "[WARNING] CSRF token not found in create-quote page\n";
+    }
 
     // Extract available categories from the dropdown
     preg_match_all('/<option value="(\d+)">(.*?)<\/option>/', $createPage, $categoryMatches, PREG_SET_ORDER);
@@ -158,7 +167,7 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
         echo "[WARNING] Category '$quoteCategory' not found in dropdown. Creating a new category.\n";
     }
 
-    // Submit quote creation form
+    // Submit quote creation form with CSRF token
     curl_setopt_array($ch, [
         CURLOPT_URL => $createQuoteUrl,
         CURLOPT_POST => true,
@@ -167,6 +176,7 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
             'quote_text' => $quoteText,
             'category_id' => $categoryId,
             'new_category' => ($categoryId == 0 ? $quoteCategory : ''),
+            'csrf_token' => $createCsrfToken,  // Include CSRF token
         ]),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,

@@ -105,7 +105,7 @@ if (!$loginResponse || curl_errno($ch)) {
 }
 echo "[SUCCESS] Login response received.\n";
 
-// Visit the main page and extract quote IDs
+// Visit the main page and extract quote IDs and CSRF token
 curl_setopt($ch, CURLOPT_URL, $indexUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, false);
@@ -115,6 +115,15 @@ if (!$pageHtml || curl_errno($ch)) {
     echo "[ERROR] Failed to fetch quotes page: " . curl_error($ch) . "\n";
     curl_close($ch);
     exit(1);
+}
+
+// Extract CSRF token from the page
+$pageCsrfToken = '';
+if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $pageHtml, $csrfMatches)) {
+    $pageCsrfToken = $csrfMatches[1];
+    echo "[INFO] CSRF token extracted from main page\n";
+} else {
+    echo "[WARNING] CSRF token not found in main page\n";
 }
 
 // Extract quote IDs using regex
@@ -138,7 +147,8 @@ foreach ($latestQuoteIds as $quoteId) {
     $likeUrl = APP_URL . "/quote/$quoteId/like";
     curl_setopt($ch, CURLOPT_URL, $likeUrl);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
     $likeResult = curl_exec($ch);
     if (!curl_errno($ch)) {
         echo "[SUCCESS] Liked Quote ID: $quoteId\n";
@@ -150,7 +160,8 @@ foreach ($latestQuoteIds as $quoteId) {
     $saveUrl = APP_URL . "/quote/$quoteId/save";
     curl_setopt($ch, CURLOPT_URL, $saveUrl);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
     $saveResult = curl_exec($ch);
     if (!curl_errno($ch)) {
         echo "[SUCCESS] Saved Quote ID: $quoteId\n";
@@ -169,7 +180,8 @@ echo "[INFO] Processing random Quote ID: $randomQuoteId\n";
 $likeUrl = APP_URL . "/quote/$randomQuoteId/like";
 curl_setopt($ch, CURLOPT_URL, $likeUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
 $likeResult = curl_exec($ch);
 if (!curl_errno($ch)) {
     echo "[SUCCESS] Liked Random Quote ID: $randomQuoteId\n";
@@ -181,7 +193,8 @@ if (!curl_errno($ch)) {
 $saveUrl = APP_URL . "/quote/$randomQuoteId/save";
 curl_setopt($ch, CURLOPT_URL, $saveUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
 $saveResult = curl_exec($ch);
 if (!curl_errno($ch)) {
     echo "[SUCCESS] Saved Random Quote ID: $randomQuoteId\n";
