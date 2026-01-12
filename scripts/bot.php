@@ -145,11 +145,28 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
 
     // Extract CSRF token from create-quote page
     $createCsrfToken = '';
-    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $createPage, $csrfMatches)) {
+    // Try multiple regex patterns to handle different HTML attribute orders
+    if (preg_match('/name=["\']csrf_token["\']\\s+value=["\']([^"\']+)["\']/', $createPage, $csrfMatches)) {
         $createCsrfToken = $csrfMatches[1];
         echo "[INFO] CSRF token extracted from create-quote page\n";
+    } elseif (preg_match('/value=["\']([^"\']+)["\']\\s+name=["\']csrf_token["\']/', $createPage, $csrfMatches)) {
+        $createCsrfToken = $csrfMatches[1];
+        echo "[INFO] CSRF token extracted from create-quote page (reversed attributes)\n";
+    } elseif (preg_match('/<input[^>]*name=["\']csrf_token["\'][^>]*value=["\']([^"\']+)["\'][^>]*>/', $createPage, $csrfMatches)) {
+        $createCsrfToken = $csrfMatches[1];
+        echo "[INFO] CSRF token extracted from create-quote page (full input tag)\n";
     } else {
         echo "[WARNING] CSRF token not found in create-quote page\n";
+        echo "[DEBUG] Searching for csrf_token in page...\n";
+        if (strpos($createPage, 'csrf_token') !== false) {
+            echo "[DEBUG] 'csrf_token' string found in page\n";
+            // Extract a snippet around csrf_token for debugging
+            $pos = strpos($createPage, 'csrf_token');
+            $snippet = substr($createPage, max(0, $pos - 50), 150);
+            echo "[DEBUG] Snippet: " . htmlspecialchars($snippet) . "\n";
+        } else {
+            echo "[DEBUG] 'csrf_token' string NOT found in page at all\n";
+        }
     }
 
     // Extract available categories from the dropdown
