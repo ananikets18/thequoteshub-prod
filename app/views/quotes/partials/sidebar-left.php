@@ -90,7 +90,7 @@
     
     <!-- Guest Profile Card -->
     <div class="profile_card_wrapper bg-white p-6 border border-gray-300 rounded-lg flex flex-col items-center space-y-6">
-      <div class="border border-1 border-gray-300 w-full h-16 bg-yellow-50 relative border rounded-t-lg">
+      <div class="hidden lg:block border border-1 border-gray-300 w-full h-16 bg-yellow-50 relative border rounded-t-lg">
         <div class="user_profile_icon absolute top-4 left-6">
           <img class="w-20 h-20 rounded-full object-cover border shadow-md"
                src="<?php echo $baseUrl; ?>public/uploads/authors_images/placeholder.png" 
