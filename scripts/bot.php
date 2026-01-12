@@ -142,6 +142,19 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
     ]);
 
     $createPage = curl_exec($ch);
+    
+    // Debug: Check what we actually received
+    echo "[DEBUG] Create-quote page length: " . strlen($createPage) . " bytes\n";
+    
+    // Check if we got redirected or got an error page
+    if (preg_match('/<title>(.*?)<\/title>/', $createPage, $titleMatch)) {
+        echo "[DEBUG] Page title: " . $titleMatch[1] . "\n";
+    }
+    
+    // Check for common error indicators
+    if (strpos($createPage, 'login') !== false && strpos($createPage, 'password') !== false) {
+        echo "[WARNING] Page appears to be a login page - session may have expired\n";
+    }
 
     // Extract CSRF token from create-quote page
     $createCsrfToken = '';
@@ -166,6 +179,8 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
             echo "[DEBUG] Snippet: " . htmlspecialchars($snippet) . "\n";
         } else {
             echo "[DEBUG] 'csrf_token' string NOT found in page at all\n";
+            echo "[DEBUG] First 500 chars of page:\n";
+            echo substr($createPage, 0, 500) . "\n";
         }
     }
 
