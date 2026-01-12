@@ -224,9 +224,21 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
     ]);
 
     $quoteResponse = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     
+    echo "[DEBUG] Quote POST response HTTP code: $httpCode\n";
+    echo "[DEBUG] Final URL after redirects: $finalUrl\n";
+    
+    // Check for success - either by message or by redirect to homepage
     if (strpos($quoteResponse, "Quote created successfully") !== false) {
         echo "[SUCCESS] Quote created successfully.\n";
+    } elseif ($finalUrl === APP_URL . "/" || $finalUrl === APP_URL) {
+        // If redirected to homepage, it means quote was created successfully
+        echo "[SUCCESS] Quote created successfully (redirected to homepage).\n";
+    } elseif (strpos($quoteResponse, "403") !== false || strpos($quoteResponse, "Forbidden") !== false) {
+        echo "[ERROR] Failed to create quote - CSRF validation failed.\n";
+        echo "[DEBUG] Response snippet: " . substr($quoteResponse, 0, 200) . "...\n";
     } else {
         echo "[ERROR] Failed to create quote.\n";
         echo "[DEBUG] Response snippet: " . substr($quoteResponse, 0, 200) . "...\n";
