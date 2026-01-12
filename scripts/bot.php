@@ -133,17 +133,22 @@ if ($httpCode == 200 && strpos($response, "dashboard") !== false) {
     echo "[INFO] Creating quote: \"$quoteText\" by $authorName under category '$quoteCategory'\n";
 
     // Fetch category dropdown options and CSRF token
+    // IMPORTANT: Reset to GET request (clear POST from login)
     curl_setopt_array($ch, [
         CURLOPT_URL => $createQuoteUrl,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_COOKIEJAR => $cookieFile,
         CURLOPT_COOKIEFILE => $cookieFile,
+        CURLOPT_POST => false,  // Explicitly set to GET request
+        CURLOPT_HTTPGET => true,  // Force GET method
     ]);
 
     $createPage = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     
     // Debug: Check what we actually received
+    echo "[DEBUG] Create-quote GET request HTTP code: $httpCode\n";
     echo "[DEBUG] Create-quote page length: " . strlen($createPage) . " bytes\n";
     
     // Check if we got redirected or got an error page
