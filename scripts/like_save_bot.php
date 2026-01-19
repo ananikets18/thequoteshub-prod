@@ -172,128 +172,58 @@ try {
     exit(1);
 }
 
-// **LIKE & SAVE LATEST QUOTES**
-echo "[DEBUG] Waiting 2 seconds before starting like/save operations...\n";
-sleep(2);
+// **LIKE & SAVE ONE LATEST QUOTE**
+// Since CSRF validation only works on the 4th attempt, we'll just process one quote per run
+// The cron job runs every 5 minutes, so different quotes will be liked over time
 
-echo "[DEBUG] CSRF Token being used: " . substr($pageCsrfToken, 0, 20) . "...\n";
+$latestQuoteIds = array_slice($quoteIds, 0, 5); // Get top 5 latest quotes
+$targetQuoteId = $latestQuoteIds[array_rand($latestQuoteIds)]; // Pick one randomly
 
-$latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quotes
-foreach ($latestQuoteIds as $quoteId) {
-    echo "[INFO] Processing latest Quote ID: $quoteId\n";
-    
-    // Use the login CSRF token directly
-    $freshCsrfToken = $pageCsrfToken;
-    
-    // Like
-    $likeUrl = APP_URL . "/quote/$quoteId/like";
-    curl_setopt($ch, CURLOPT_URL, $likeUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
-    $likeResult = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    if (!curl_errno($ch)) {
-        if ($httpCode == 200) {
-            $response = json_decode($likeResult, true);
-            if (isset($response['success']) && $response['success']) {
-                echo "[SUCCESS] Liked Quote ID: $quoteId (liked: " . ($response['liked'] ? 'yes' : 'no') . ")\n";
-            } else {
-                echo "[WARNING] Like request returned but may have failed - Response: $likeResult\n";
-            }
-        } elseif ($httpCode == 403) {
-            echo "[ERROR] Like failed with HTTP 403 - CSRF token invalid\n";
-            // Try to get a fresh token by visiting the quote page
-            $quotePageUrl = APP_URL . "/quote/$quoteId";
-            curl_setopt($ch, CURLOPT_URL, $quotePageUrl);
-            curl_setopt($ch, CURLOPT_POST, false);
-            $quotePage = curl_exec($ch);
-            
-            // Extract new CSRF token if available
-            if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $quotePage, $newTokenMatches)) {
-                $freshCsrfToken = $newTokenMatches[1];
-                echo "[INFO] Extracted fresh CSRF token, retrying like...\n";
-                
-                // Retry the like with new token
-                curl_setopt($ch, CURLOPT_URL, $likeUrl);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
-                $likeResult = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                
-                if ($httpCode == 200) {
-                    $response = json_decode($likeResult, true);
-                    if (isset($response['success']) && $response['success']) {
-                        echo "[SUCCESS] Liked Quote ID: $quoteId after retry\n";
-                    }
-                } else {
-                    echo "[ERROR] Retry also failed with HTTP $httpCode\n";
-                }
-            }
-        } else {
-            echo "[ERROR] Like failed with HTTP $httpCode - Response: $likeResult\n";
-        }
-    } else {
-        echo "[ERROR] Failed to like Quote ID: $quoteId - " . curl_error($ch) . "\n";
-    }
+echo "[INFO] Processing Quote ID: $targetQuoteId\n";
 
-    // Save
-    $saveUrl = APP_URL . "/quote/$quoteId/save";
-    curl_setopt($ch, CURLOPT_URL, $saveUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
-    $saveResult = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    if (!curl_errno($ch)) {
-        if ($httpCode == 200) {
-            $response = json_decode($saveResult, true);
-            if (isset($response['success']) && $response['success']) {
-                echo "[SUCCESS] Saved Quote ID: $quoteId (saved: " . ($response['saved'] ? 'yes' : 'no') . ")\n";
-            } else {
-                echo "[WARNING] Save request returned but may have failed - Response: $saveResult\n";
-            }
-        } else {
-            echo "[ERROR] Save failed with HTTP $httpCode - Response: $saveResult\n";
-        }
-    } else {
-        echo "[ERROR] Failed to save Quote ID: $quoteId - " . curl_error($ch) . "\n";
-    }
-    
-    usleep(500000); // Wait 0.5 seconds between requests
-}
-
-// **LIKE & SAVE A RANDOM QUOTE**
-$randomQuoteId = $quoteIds[array_rand($quoteIds)];
-echo "[INFO] Processing random Quote ID: $randomQuoteId\n";
+// Use the session CSRF token
+$freshCsrfToken = $pageCsrfToken;
 
 // Like
-$likeUrl = APP_URL . "/quote/$randomQuoteId/like";
+$likeUrl = APP_URL . "/quote/$targetQuoteId/like";
 curl_setopt($ch, CURLOPT_URL, $likeUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
 $likeResult = curl_exec($ch);
-if (!curl_errno($ch)) {
-    echo "[SUCCESS] Liked Random Quote ID: $randomQuoteId\n";
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (!curl_errno($ch) && $httpCode == 200) {
+    $response = json_decode($likeResult, true);
+    if (isset($response['success']) && $response['success']) {
+        echo "[SUCCESS] Liked Quote ID: $targetQuoteId\n";
+    } else {
+        echo "[WARNING] Like may have failed - Response: $likeResult\n";
+    }
 } else {
-    echo "[ERROR] Failed to like Quote ID: $randomQuoteId - " . curl_error($ch) . "\n";
+    echo "[ERROR] Like failed with HTTP $httpCode\n";
 }
 
+usleep(500000); // Wait 0.5 seconds
+
 // Save
-$saveUrl = APP_URL . "/quote/$randomQuoteId/save";
+$saveUrl = APP_URL . "/quote/$targetQuoteId/save";
 curl_setopt($ch, CURLOPT_URL, $saveUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
 $saveResult = curl_exec($ch);
-if (!curl_errno($ch)) {
-    echo "[SUCCESS] Saved Random Quote ID: $randomQuoteId\n";
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (!curl_errno($ch) && $httpCode == 200) {
+    $response = json_decode($saveResult, true);
+    if (isset($response['success']) && $response['success']) {
+        echo "[SUCCESS] Saved Quote ID: $targetQuoteId\n";
+    } else {
+        echo "[WARNING] Save may have failed - Response: $saveResult\n";
+    }
 } else {
-    echo "[ERROR] Failed to save Quote ID: $randomQuoteId - " . curl_error($ch) . "\n";
+    echo "[ERROR] Save failed with HTTP $httpCode\n";
 }
 
 // Logout
