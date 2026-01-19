@@ -186,18 +186,23 @@ $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quo
 foreach ($latestQuoteIds as $quoteId) {
     echo "[INFO] Processing latest Quote ID: $quoteId\n";
     
-    // Visit the quote page to get a fresh CSRF token
-    $quotePageUrl = APP_URL . "/quote/$quoteId";
-    curl_setopt($ch, CURLOPT_URL, $quotePageUrl);
+    // Visit dashboard to refresh CSRF token
+    $dashboardUrl = APP_URL . "/dashboard";
+    curl_setopt($ch, CURLOPT_URL, $dashboardUrl);
     curl_setopt($ch, CURLOPT_POST, false);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $quotePage = curl_exec($ch);
+    $dashboardPage = curl_exec($ch);
     
-    // Try to extract CSRF token from quote page
+    // Try to extract fresh CSRF token from dashboard
     $freshCsrfToken = $pageCsrfToken; // Default to existing token
-    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $quotePage, $tokenMatches)) {
+    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $dashboardPage, $tokenMatches)) {
         $freshCsrfToken = $tokenMatches[1];
-        echo "[DEBUG] Fresh CSRF token extracted for quote $quoteId\n";
+        echo "[DEBUG] Fresh CSRF token extracted from dashboard\n";
+    } elseif (preg_match('/<meta name="csrf-token" content="([^"]+)"/', $dashboardPage, $metaMatches)) {
+        $freshCsrfToken = $metaMatches[1];
+        echo "[DEBUG] Fresh CSRF token extracted from meta tag\n";
+    } else {
+        echo "[WARNING] Could not extract fresh CSRF token, using existing one\n";
     }
     
     // Like
