@@ -202,6 +202,36 @@ foreach ($latestQuoteIds as $quoteId) {
             } else {
                 echo "[WARNING] Like request returned but may have failed - Response: $likeResult\n";
             }
+        } elseif ($httpCode == 403) {
+            echo "[ERROR] Like failed with HTTP 403 - CSRF token invalid\n";
+            // Try to get a fresh token by visiting the quote page
+            $quotePageUrl = APP_URL . "/quote/$quoteId";
+            curl_setopt($ch, CURLOPT_URL, $quotePageUrl);
+            curl_setopt($ch, CURLOPT_POST, false);
+            $quotePage = curl_exec($ch);
+            
+            // Extract new CSRF token if available
+            if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $quotePage, $newTokenMatches)) {
+                $freshCsrfToken = $newTokenMatches[1];
+                echo "[INFO] Extracted fresh CSRF token, retrying like...\n";
+                
+                // Retry the like with new token
+                curl_setopt($ch, CURLOPT_URL, $likeUrl);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
+                $likeResult = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                
+                if ($httpCode == 200) {
+                    $response = json_decode($likeResult, true);
+                    if (isset($response['success']) && $response['success']) {
+                        echo "[SUCCESS] Liked Quote ID: $quoteId after retry\n";
+                    }
+                } else {
+                    echo "[ERROR] Retry also failed with HTTP $httpCode\n";
+                }
+            }
         } else {
             echo "[ERROR] Like failed with HTTP $httpCode - Response: $likeResult\n";
         }
