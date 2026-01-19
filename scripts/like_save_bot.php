@@ -193,6 +193,9 @@ foreach ($latestQuoteIds as $quoteId) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $dashboardPage = curl_exec($ch);
     
+    // Debug: Show part of response
+    echo "[DEBUG] Dashboard response length: " . strlen($dashboardPage) . " bytes\n";
+    
     // Try to extract fresh CSRF token from dashboard
     $freshCsrfToken = $pageCsrfToken; // Default to existing token
     if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $dashboardPage, $tokenMatches)) {
@@ -202,7 +205,15 @@ foreach ($latestQuoteIds as $quoteId) {
         $freshCsrfToken = $metaMatches[1];
         echo "[DEBUG] Fresh CSRF token extracted from meta tag\n";
     } else {
-        echo "[WARNING] Could not extract fresh CSRF token, using existing one\n";
+        // Try JavaScript variable
+        if (preg_match('/csrfToken\s*=\s*["\']([^"\']+)["\']/', $dashboardPage, $jsMatches)) {
+            $freshCsrfToken = $jsMatches[1];
+            echo "[DEBUG] Fresh CSRF token extracted from JS variable\n";
+        } else {
+            echo "[WARNING] Could not extract fresh CSRF token, using existing one\n";
+            // Show snippet of dashboard to debug
+            echo "[DEBUG] Dashboard snippet: " . substr($dashboardPage, 0, 300) . "...\n";
+        }
     }
     
     // Like
