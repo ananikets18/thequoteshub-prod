@@ -193,8 +193,19 @@ foreach ($latestQuoteIds as $quoteId) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
     $likeResult = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
     if (!curl_errno($ch)) {
-        echo "[SUCCESS] Liked Quote ID: $quoteId\n";
+        if ($httpCode == 200) {
+            $response = json_decode($likeResult, true);
+            if (isset($response['success']) && $response['success']) {
+                echo "[SUCCESS] Liked Quote ID: $quoteId (liked: " . ($response['liked'] ? 'yes' : 'no') . ")\n";
+            } else {
+                echo "[WARNING] Like request returned but may have failed - Response: $likeResult\n";
+            }
+        } else {
+            echo "[ERROR] Like failed with HTTP $httpCode - Response: $likeResult\n";
+        }
     } else {
         echo "[ERROR] Failed to like Quote ID: $quoteId - " . curl_error($ch) . "\n";
     }
@@ -206,8 +217,19 @@ foreach ($latestQuoteIds as $quoteId) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
     $saveResult = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
     if (!curl_errno($ch)) {
-        echo "[SUCCESS] Saved Quote ID: $quoteId\n";
+        if ($httpCode == 200) {
+            $response = json_decode($saveResult, true);
+            if (isset($response['success']) && $response['success']) {
+                echo "[SUCCESS] Saved Quote ID: $quoteId (saved: " . ($response['saved'] ? 'yes' : 'no') . ")\n";
+            } else {
+                echo "[WARNING] Save request returned but may have failed - Response: $saveResult\n";
+            }
+        } else {
+            echo "[ERROR] Save failed with HTTP $httpCode - Response: $saveResult\n";
+        }
     } else {
         echo "[ERROR] Failed to save Quote ID: $quoteId - " . curl_error($ch) . "\n";
     }
