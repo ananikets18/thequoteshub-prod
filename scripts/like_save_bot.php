@@ -141,7 +141,7 @@ try {
     echo "[INFO] Database connection established\n";
     
     // Get the 10 most recently created quotes
-    $stmt = $conn->prepare("SELECT id FROM quotes WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10");
+    $stmt = $conn->prepare("SELECT id FROM quotes ORDER BY created_at DESC LIMIT 10");
     
     if (!$stmt) {
         throw new Exception("Failed to prepare statement: " . $conn->error);
