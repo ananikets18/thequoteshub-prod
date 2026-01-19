@@ -50,8 +50,8 @@ try {
             echo json_encode(['success' => true, 'liked' => true, 'like_count' => $likeCount]);
         }
     } elseif ($action === 'save') {
-        // Direct database query for saves (in case SaveModel doesn't exist)
-        $checkStmt = $conn->prepare("SELECT id FROM saved_quotes WHERE user_id = ? AND quote_id = ?");
+        // Direct database query for saves (table name is 'saves' not 'saved_quotes')
+        $checkStmt = $conn->prepare("SELECT id FROM saves WHERE user_id = ? AND quote_id = ?");
         $checkStmt->bind_param("ii", $userId, $quoteId);
         $checkStmt->execute();
         $result = $checkStmt->get_result();
@@ -59,13 +59,13 @@ try {
         $checkStmt->close();
         
         if ($isSaved) {
-            $deleteStmt = $conn->prepare("DELETE FROM saved_quotes WHERE user_id = ? AND quote_id = ?");
+            $deleteStmt = $conn->prepare("DELETE FROM saves WHERE user_id = ? AND quote_id = ?");
             $deleteStmt->bind_param("ii", $userId, $quoteId);
             $deleteStmt->execute();
             $deleteStmt->close();
             echo json_encode(['success' => true, 'saved' => false]);
         } else {
-            $insertStmt = $conn->prepare("INSERT INTO saved_quotes (user_id, quote_id) VALUES (?, ?)");
+            $insertStmt = $conn->prepare("INSERT INTO saves (user_id, quote_id) VALUES (?, ?)");
             $insertStmt->bind_param("ii", $userId, $quoteId);
             $insertStmt->execute();
             $insertStmt->close();
