@@ -186,12 +186,26 @@ $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quo
 foreach ($latestQuoteIds as $quoteId) {
     echo "[INFO] Processing latest Quote ID: $quoteId\n";
     
+    // Visit the quote page to get a fresh CSRF token
+    $quotePageUrl = APP_URL . "/quote/$quoteId";
+    curl_setopt($ch, CURLOPT_URL, $quotePageUrl);
+    curl_setopt($ch, CURLOPT_POST, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $quotePage = curl_exec($ch);
+    
+    // Try to extract CSRF token from quote page
+    $freshCsrfToken = $pageCsrfToken; // Default to existing token
+    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $quotePage, $tokenMatches)) {
+        $freshCsrfToken = $tokenMatches[1];
+        echo "[DEBUG] Fresh CSRF token extracted for quote $quoteId\n";
+    }
+    
     // Like
     $likeUrl = APP_URL . "/quote/$quoteId/like";
     curl_setopt($ch, CURLOPT_URL, $likeUrl);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
     $likeResult = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     
@@ -214,8 +228,8 @@ foreach ($latestQuoteIds as $quoteId) {
     $saveUrl = APP_URL . "/quote/$quoteId/save";
     curl_setopt($ch, CURLOPT_URL, $saveUrl);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $pageCsrfToken]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $pageCsrfToken"]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
     $saveResult = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     
