@@ -105,30 +105,10 @@ if (!$loginResponse || curl_errno($ch)) {
 }
 echo "[SUCCESS] Login response received.\n";
 
-// Visit the main page to maintain session
-curl_setopt($ch, CURLOPT_URL, $indexUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, false);
-$pageHtml = curl_exec($ch);
-
-if (!$pageHtml || curl_errno($ch)) {
-    echo "[ERROR] Failed to fetch quotes page: " . curl_error($ch) . "\n";
-    curl_close($ch);
-    exit(1);
-}
-
-// Extract CSRF token from the page, or use login token as fallback
-$pageCsrfToken = '';
-if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $pageHtml, $csrfMatches)) {
-    $pageCsrfToken = $csrfMatches[1];
-    echo "[INFO] CSRF token extracted from main page\n";
-} elseif (!empty($csrfToken)) {
-    // Use login CSRF token as fallback
-    $pageCsrfToken = $csrfToken;
-    echo "[INFO] Using login CSRF token for requests\n";
-} else {
-    echo "[WARNING] No CSRF token available\n";
-}
+// Don't visit homepage - it invalidates the CSRF token
+// Just use the login CSRF token directly
+$pageCsrfToken = $csrfToken;
+echo "[INFO] Using login CSRF token for all requests\n";
 
 // Connect to database to get latest quotes
 try {
@@ -166,19 +146,8 @@ try {
     
 } catch (Exception $e) {
     echo "[ERROR] Database error: " . $e->getMessage() . "\n";
-    echo "[INFO] Falling back to HTML scraping method...\n";
-    
-    // Fallback: Extract quote IDs from HTML
-    preg_match_all('/\/quote\/(\d+)/', $pageHtml, $matches);
-    $quoteIds = array_unique($matches[1]);
-    
-    if (empty($quoteIds)) {
-        echo "[ERROR] No quotes found.\n";
-        curl_close($ch);
-        exit(1);
-    }
-    
-    echo "[INFO] Found " . count($quoteIds) . " quotes from HTML.\n";
+    curl_close($ch);
+    exit(1);
 }
 
 // **LIKE & SAVE LATEST QUOTES**
@@ -186,35 +155,8 @@ $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quo
 foreach ($latestQuoteIds as $quoteId) {
     echo "[INFO] Processing latest Quote ID: $quoteId\n";
     
-    // Visit dashboard to refresh CSRF token
-    $dashboardUrl = APP_URL . "/dashboard";
-    curl_setopt($ch, CURLOPT_URL, $dashboardUrl);
-    curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $dashboardPage = curl_exec($ch);
-    
-    // Debug: Show part of response
-    echo "[DEBUG] Dashboard response length: " . strlen($dashboardPage) . " bytes\n";
-    
-    // Try to extract fresh CSRF token from dashboard
-    $freshCsrfToken = $pageCsrfToken; // Default to existing token
-    if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $dashboardPage, $tokenMatches)) {
-        $freshCsrfToken = $tokenMatches[1];
-        echo "[DEBUG] Fresh CSRF token extracted from dashboard\n";
-    } elseif (preg_match('/<meta name="csrf-token" content="([^"]+)"/', $dashboardPage, $metaMatches)) {
-        $freshCsrfToken = $metaMatches[1];
-        echo "[DEBUG] Fresh CSRF token extracted from meta tag\n";
-    } else {
-        // Try JavaScript variable
-        if (preg_match('/csrfToken\s*=\s*["\']([^"\']+)["\']/', $dashboardPage, $jsMatches)) {
-            $freshCsrfToken = $jsMatches[1];
-            echo "[DEBUG] Fresh CSRF token extracted from JS variable\n";
-        } else {
-            echo "[WARNING] Could not extract fresh CSRF token, using existing one\n";
-            // Show snippet of dashboard to debug
-            echo "[DEBUG] Dashboard snippet: " . substr($dashboardPage, 0, 300) . "...\n";
-        }
-    }
+    // Use the login CSRF token directly
+    $freshCsrfToken = $pageCsrfToken;
     
     // Like
     $likeUrl = APP_URL . "/quote/$quoteId/like";
