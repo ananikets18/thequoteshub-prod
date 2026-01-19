@@ -131,26 +131,55 @@ if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $pageHtml, $csrfMatches)
 }
 
 // Connect to database to get latest quotes
-require_once __DIR__ . '/../config/database.php';
-
-// Get the 10 most recently created quotes
-$stmt = $conn->prepare("SELECT id FROM quotes WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10");
-$stmt->execute();
-$result = $stmt->get_result();
-
-$quoteIds = [];
-while ($row = $result->fetch_assoc()) {
-    $quoteIds[] = $row['id'];
+try {
+    require_once __DIR__ . '/../config/database.php';
+    
+    if (!isset($conn) || !$conn) {
+        throw new Exception("Database connection not available");
+    }
+    
+    echo "[INFO] Database connection established\n";
+    
+    // Get the 10 most recently created quotes
+    $stmt = $conn->prepare("SELECT id FROM quotes WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10");
+    
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement: " . $conn->error);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $quoteIds = [];
+    while ($row = $result->fetch_assoc()) {
+        $quoteIds[] = $row['id'];
+    }
+    $stmt->close();
+    
+    if (empty($quoteIds)) {
+        echo "[ERROR] No quotes found in database.\n";
+        curl_close($ch);
+        exit(1);
+    }
+    
+    echo "[INFO] Found " . count($quoteIds) . " latest quotes from database.\n";
+    
+} catch (Exception $e) {
+    echo "[ERROR] Database error: " . $e->getMessage() . "\n";
+    echo "[INFO] Falling back to HTML scraping method...\n";
+    
+    // Fallback: Extract quote IDs from HTML
+    preg_match_all('/\/quote\/(\d+)/', $pageHtml, $matches);
+    $quoteIds = array_unique($matches[1]);
+    
+    if (empty($quoteIds)) {
+        echo "[ERROR] No quotes found.\n";
+        curl_close($ch);
+        exit(1);
+    }
+    
+    echo "[INFO] Found " . count($quoteIds) . " quotes from HTML.\n";
 }
-$stmt->close();
-
-if (empty($quoteIds)) {
-    echo "[ERROR] No quotes found in database.\n";
-    curl_close($ch);
-    exit(1);
-}
-
-echo "[INFO] Found " . count($quoteIds) . " latest quotes from database.\n";
 
 // **LIKE & SAVE LATEST QUOTES**
 $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quotes
