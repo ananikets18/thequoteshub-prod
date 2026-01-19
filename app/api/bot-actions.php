@@ -7,7 +7,6 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/models/LikeModel.php';
-require_once __DIR__ . '/../app/models/SaveModel.php';
 
 // Check if request has valid API key
 $apiKey = $_SERVER['HTTP_X_BOT_API_KEY'] ?? $_POST['api_key'] ?? null;
@@ -47,15 +46,25 @@ try {
             echo json_encode(['success' => true, 'liked' => true, 'like_count' => $likeCount]);
         }
     } elseif ($action === 'save') {
-        require_once __DIR__ . '/../app/models/SaveModel.php';
-        $saveModel = new SaveModel($conn);
-        $isSaved = $saveModel->isSaved($userId, $quoteId);
+        // Direct database query for saves (in case SaveModel doesn't exist)
+        $checkStmt = $conn->prepare("SELECT id FROM saved_quotes WHERE user_id = ? AND quote_id = ?");
+        $checkStmt->bind_param("ii", $userId, $quoteId);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        $isSaved = $result->num_rows > 0;
+        $checkStmt->close();
         
         if ($isSaved) {
-            $saveModel->removeSave($userId, $quoteId);
+            $deleteStmt = $conn->prepare("DELETE FROM saved_quotes WHERE user_id = ? AND quote_id = ?");
+            $deleteStmt->bind_param("ii", $userId, $quoteId);
+            $deleteStmt->execute();
+            $deleteStmt->close();
             echo json_encode(['success' => true, 'saved' => false]);
         } else {
-            $saveModel->addSave($userId, $quoteId);
+            $insertStmt = $conn->prepare("INSERT INTO saved_quotes (user_id, quote_id) VALUES (?, ?)");
+            $insertStmt->bind_param("ii", $userId, $quoteId);
+            $insertStmt->execute();
+            $insertStmt->close();
             echo json_encode(['success' => true, 'saved' => true]);
         }
     } else {
