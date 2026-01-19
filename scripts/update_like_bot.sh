@@ -1,3 +1,18 @@
+#!/bin/bash
+# Like Bot Update Script
+# This script updates the like_save_bot.php to target latest created quotes
+
+echo "=========================================="
+echo "Like Bot Update - Latest Quotes Fix"
+echo "=========================================="
+
+# Backup current version
+BACKUP_FILE="scripts/like_save_bot.php.backup_$(date +%Y%m%d_%H%M%S)"
+echo "Creating backup: $BACKUP_FILE"
+cp scripts/like_save_bot.php "$BACKUP_FILE"
+
+# Create the updated bot file
+cat > scripts/like_save_bot.php.new << 'EOFBOT'
 <?php
 
 require __DIR__ . '/../vendor/autoload.php'; // Load PHPSpreadsheet library
@@ -227,3 +242,26 @@ echo "[" . date('Y-m-d H:i:s') . "] Like & Save Bot Finished\n";
 echo str_repeat("=", 60) . "\n";
 
 ?>
+EOFBOT
+
+# Replace the old file with the new one
+mv scripts/like_save_bot.php.new scripts/like_save_bot.php
+chmod +x scripts/like_save_bot.php
+
+echo ""
+echo "✅ Bot updated successfully!"
+echo ""
+echo "Testing the updated bot..."
+echo "=========================================="
+
+# Test the bot
+php scripts/like_save_bot.php
+
+echo ""
+echo "=========================================="
+echo "Deployment Complete!"
+echo "Backup saved to: $BACKUP_FILE"
+echo ""
+echo "To rollback if needed:"
+echo "  cp $BACKUP_FILE scripts/like_save_bot.php"
+echo "=========================================="
