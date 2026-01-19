@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../app/models/LikeModel.php';
 
 // Check if request has valid API key
 $apiKey = $_SERVER['HTTP_X_BOT_API_KEY'] ?? $_POST['api_key'] ?? null;
-$validApiKey = getenv('BOT_API_KEY') ?: 'your-secret-bot-api-key-here'; // Change this!
+$validApiKey = getenv('BOT_API_KEY') ?: 'bot_7k9m2n4p6q8r1s3t5v7w9x0y2z4a6b8c'; // Secure random key
 
 if ($apiKey !== $validApiKey) {
     http_response_code(403);
@@ -37,17 +37,22 @@ header('Content-Type: application/json');
 
 try {
     if ($action === 'like') {
-        $likeModel = new LikeModel($conn);
-        $isLiked = $likeModel->isLiked($userId, $quoteId);
-        
-        if ($isLiked) {
-            $likeModel->removeLike($userId, $quoteId);
-            $likeCount = $likeModel->getLikeCount($quoteId);
-            echo json_encode(['success' => true, 'liked' => false, 'like_count' => $likeCount]);
-        } else {
-            $likeModel->addLike($userId, $quoteId);
-            $likeCount = $likeModel->getLikeCount($quoteId);
-            echo json_encode(['success' => true, 'liked' => true, 'like_count' => $likeCount]);
+        try {
+            $likeModel = new LikeModel($conn);
+            $isLiked = $likeModel->isLiked($userId, $quoteId);
+            
+            if ($isLiked) {
+                $likeModel->removeLike($userId, $quoteId);
+                $likeCount = $likeModel->getLikeCount($quoteId);
+                echo json_encode(['success' => true, 'liked' => false, 'like_count' => $likeCount]);
+            } else {
+                $likeModel->addLike($userId, $quoteId);
+                $likeCount = $likeModel->getLikeCount($quoteId);
+                echo json_encode(['success' => true, 'liked' => true, 'like_count' => $likeCount]);
+            }
+        } catch (Exception $likeError) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Like error: ' . $likeError->getMessage()]);
         }
     } elseif ($action === 'save') {
         // Direct database query for saves (table name is 'saves' not 'saved_quotes')

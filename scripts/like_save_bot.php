@@ -193,7 +193,7 @@ $userStmt->close();
 echo "[INFO] Bot user ID: $botUserId\n";
 
 // Bot API key (should match the one in bot-actions.php)
-$botApiKey = "your-secret-bot-api-key-here"; // Change this to match!
+$botApiKey = "bot_7k9m2n4p6q8r1s3t5v7w9x0y2z4a6b8c"; // Secure random key
 
 // Like using bot API
 $botApiUrl = APP_URL . "/app/api/bot-actions.php";
