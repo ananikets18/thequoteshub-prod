@@ -173,57 +173,77 @@ try {
 }
 
 // **LIKE & SAVE ONE LATEST QUOTE**
-// Since CSRF validation only works on the 4th attempt, we'll just process one quote per run
-// The cron job runs every 5 minutes, so different quotes will be liked over time
-
-$latestQuoteIds = array_slice($quoteIds, 0, 5); // Get top 5 latest quotes
-$targetQuoteId = $latestQuoteIds[array_rand($latestQuoteIds)]; // Pick one randomly
+// Use bot API endpoint to bypass CSRF validation
+$latestQuoteIds = array_slice($quoteIds, 0, 5);
+$targetQuoteId = $latestQuoteIds[array_rand($latestQuoteIds)];
 
 echo "[INFO] Processing Quote ID: $targetQuoteId\n";
 
-// Use the session CSRF token
-$freshCsrfToken = $pageCsrfToken;
+// Get user ID from session (we're logged in)
+// We need to extract user_id from the login response or session
+// For now, we'll get it from the database based on username
+$userStmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+$userStmt->bind_param("s", $username);
+$userStmt->execute();
+$userResult = $userStmt->get_result();
+$userData = $userResult->fetch_assoc();
+$botUserId = $userData['id'];
+$userStmt->close();
 
-// Like
-$likeUrl = APP_URL . "/quote/$targetQuoteId/like";
-curl_setopt($ch, CURLOPT_URL, $likeUrl);
+echo "[INFO] Bot user ID: $botUserId\n";
+
+// Bot API key (should match the one in bot-actions.php)
+$botApiKey = "your-secret-bot-api-key-here"; // Change this to match!
+
+// Like using bot API
+$botApiUrl = APP_URL . "/app/api/bot-actions.php";
+curl_setopt($ch, CURLOPT_URL, $botApiUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+    'action' => 'like',
+    'quote_id' => $targetQuoteId,
+    'user_id' => $botUserId,
+    'api_key' => $botApiKey
+]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-BOT-API-KEY: $botApiKey"]);
 $likeResult = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (!curl_errno($ch) && $httpCode == 200) {
     $response = json_decode($likeResult, true);
     if (isset($response['success']) && $response['success']) {
-        echo "[SUCCESS] Liked Quote ID: $targetQuoteId\n";
+        echo "[SUCCESS] Liked Quote ID: $targetQuoteId via bot API\n";
     } else {
         echo "[WARNING] Like may have failed - Response: $likeResult\n";
     }
 } else {
-    echo "[ERROR] Like failed with HTTP $httpCode\n";
+    echo "[ERROR] Like failed with HTTP $httpCode - Response: $likeResult\n";
 }
 
-usleep(500000); // Wait 0.5 seconds
+usleep(500000);
 
-// Save
-$saveUrl = APP_URL . "/quote/$targetQuoteId/save";
-curl_setopt($ch, CURLOPT_URL, $saveUrl);
+// Save using bot API
+curl_setopt($ch, CURLOPT_URL, $botApiUrl);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['csrf_token' => $freshCsrfToken]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-CSRF-TOKEN: $freshCsrfToken"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+    'action' => 'save',
+    'quote_id' => $targetQuoteId,
+    'user_id' => $botUserId,
+    'api_key' => $botApiKey
+]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ["X-BOT-API-KEY: $botApiKey"]);
 $saveResult = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (!curl_errno($ch) && $httpCode == 200) {
     $response = json_decode($saveResult, true);
     if (isset($response['success']) && $response['success']) {
-        echo "[SUCCESS] Saved Quote ID: $targetQuoteId\n";
+        echo "[SUCCESS] Saved Quote ID: $targetQuoteId via bot API\n";
     } else {
         echo "[WARNING] Save may have failed - Response: $saveResult\n";
     }
 } else {
-    echo "[ERROR] Save failed with HTTP $httpCode\n";
+    echo "[ERROR] Save failed with HTTP $httpCode - Response: $saveResult\n";
 }
 
 // Logout
