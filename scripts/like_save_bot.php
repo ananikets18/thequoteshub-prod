@@ -105,10 +105,32 @@ if (!$loginResponse || curl_errno($ch)) {
 }
 echo "[SUCCESS] Login response received.\n";
 
-// Don't visit homepage - it invalidates the CSRF token
-// Just use the login CSRF token directly
-$pageCsrfToken = $csrfToken;
-echo "[INFO] Using login CSRF token for all requests\n";
+// Visit dashboard after login to get the session's CSRF token
+echo "[INFO] Fetching session CSRF token from dashboard...\n";
+$dashboardUrl = APP_URL . "/dashboard";
+curl_setopt($ch, CURLOPT_URL, $dashboardUrl);
+curl_setopt($ch, CURLOPT_POST, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$dashboardPage = curl_exec($ch);
+
+// Extract the session's CSRF token
+$sessionCsrfToken = $csrfToken; // Default to login token
+if (preg_match('/name="csrf_token"\s+value="([^"]+)"/', $dashboardPage, $dashMatches)) {
+    $sessionCsrfToken = $dashMatches[1];
+    echo "[INFO] Session CSRF token extracted from dashboard\n";
+} elseif (preg_match('/<meta name="csrf-token" content="([^"]+)"/', $dashboardPage, $metaMatches)) {
+    $sessionCsrfToken = $metaMatches[1];
+    echo "[INFO] Session CSRF token extracted from meta tag\n";
+} elseif (preg_match('/var csrfToken = ["\']([^"\']+)["\']/', $dashboardPage, $jsMatches)) {
+    $sessionCsrfToken = $jsMatches[1];
+    echo "[INFO] Session CSRF token extracted from JavaScript\n";
+} else {
+    echo "[WARNING] Could not extract session CSRF token, using login token\n";
+}
+
+// Use the session CSRF token for all requests
+$pageCsrfToken = $sessionCsrfToken;
+echo "[INFO] Using session CSRF token for all requests\n";
 
 // Connect to database to get latest quotes
 try {
@@ -151,6 +173,11 @@ try {
 }
 
 // **LIKE & SAVE LATEST QUOTES**
+echo "[DEBUG] Waiting 2 seconds before starting like/save operations...\n";
+sleep(2);
+
+echo "[DEBUG] CSRF Token being used: " . substr($pageCsrfToken, 0, 20) . "...\n";
+
 $latestQuoteIds = array_slice($quoteIds, 0, 3); // Select the first 3 latest quotes
 foreach ($latestQuoteIds as $quoteId) {
     echo "[INFO] Processing latest Quote ID: $quoteId\n";
