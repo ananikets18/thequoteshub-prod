@@ -5,8 +5,12 @@
  * Security: Uses API key authentication instead of CSRF tokens
  */
 
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../app/models/LikeModel.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/models/LikeModel.php';
 
 // Check if request has valid API key
 $apiKey = $_SERVER['HTTP_X_BOT_API_KEY'] ?? $_POST['api_key'] ?? null;
